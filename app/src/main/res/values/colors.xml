@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="gray">#A7A5A5</color>
+    <color name="balajiorange">#fc9734</color>
+    <color name="balajiyello">#ffb600</color>
+    <color name="balajimaroon">#7f3a3c</color>
+
+    <color name="tablenormal">#FFFFFF</color>
+    <color name="tableOrdered">#d9f8ad</color>
+    <color name="tableKOT">#8da668</color>
+    <color name="tableBilled">#ff0000</color>
+
+    <color name="light_gray">#EAE7E7</color>
+    <color name="red">#8E0909</color>
+    <color name="grey_transparent_20">#20606060</color>
+    <color name="box_white_transparent">#B7FFFFFF</color>
+    <color name="box_black_transparent">#5C434242</color>
+    <color name="full_trans">#00FFFFFF</color>
+    <color name="line_graph">#16D0D7</color>
+
+    <color name="row_shade1">#13A7BBC3</color>
+    <color name="row_shade2">#2D7CAEB0</color>
+    <color name="row_shade3">#41FCAD3F</color>
+    <color name="row_shade4">#2EF9C174</color>
+    <color name="green">#4EC433</color>
+</resources>

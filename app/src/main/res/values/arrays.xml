@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="organisation_type">
+        <item><FONT COLOR="#000000">Restaurant Billing</FONT></item>
+        <item><FONT COLOR="#000000">Retailer Billing</FONT></item>
+        <item><FONT COLOR="#000000">Snack Bar</FONT></item>
+    </string-array>
+    <string-array name="language">
+        <item><FONT COLOR="#000000">English</FONT></item>
+    </string-array>
+
+    <string-array name="bill_size">
+        <item><FONT COLOR="#000000">58</FONT></item>
+        <item><FONT COLOR="#000000">80</FONT></item>
+    </string-array>
+
+    <string-array name="bill_type">
+        <item><FONT COLOR="#000000">Food</FONT></item>
+        <item><FONT COLOR="#000000">Bar</FONT></item>
+    </string-array>
+
+    <string-array name="com_port">
+        <item><FONT COLOR="#000000">COM Port 1</FONT></item>
+        <item><FONT COLOR="#000000">COM Port 2</FONT></item>
+        <item><FONT COLOR="#000000">COM Port 3</FONT></item>
+        <item><FONT COLOR="#000000">COM Port 4</FONT></item>
+        <item><FONT COLOR="#000000">COM Port 5</FONT></item>
+        <item><FONT COLOR="#000000">COM Port 6</FONT></item>
+    </string-array>
+
+    <string-array name="yes_no">
+        <item><FONT COLOR="#000000">Yes</FONT></item>
+        <item><FONT COLOR="#000000">No</FONT></item>
+    </string-array>
+
+    <string-array name="order_sequence">
+        <item><FONT COLOR="#000000">Order no. on Left and Date on Right</FONT></item>
+        <item><FONT COLOR="#000000">Order no. on Right and Date on Left</FONT></item>
+    </string-array>
+
+    <string-array name="purpose_od_device">
+        <item><FONT COLOR="#000000">Master</FONT></item>
+        <item><FONT COLOR="#000000">Client</FONT></item>
+    </string-array>
+
+    <string-array name="discount_type">
+        <item><FONT COLOR="#000000">Percentage</FONT></item>
+        <item><FONT COLOR="#000000">Amount</FONT></item>
+    </string-array>
+    <string-array name="countries_array">
+        <item>Afghanistan</item>
+        <item>Albania</item>
+        <item>Algeria</item>
+        <item>American Samoa</item>
+        <item>Andorra</item>
+        <item>Angola</item>
+        <item>Anguilla</item>
+        <item>Antarctica</item>
+    </string-array>
+
+</resources>
