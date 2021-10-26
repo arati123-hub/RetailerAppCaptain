@@ -94,7 +94,7 @@ public class TableDetailsAdapter extends RecyclerView.Adapter<TableDetailsAdapte
             if (table_bar_status == null) { table_bar_status = ""; }
         }
 
-
+        String tableName = tableListDetails.get(position).getCollector_name();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (table_food_status.length()!=0 && table_bar_status.length()!=0){
                 if (table_food_status.equals("1") && table_bar_status.equals("1")) {
@@ -105,7 +105,7 @@ public class TableDetailsAdapter extends RecyclerView.Adapter<TableDetailsAdapte
                     {
                         Log.e("Error", e.getStackTrace().toString());
                     }
-                    holder.tableNo.setText(tableListDetails.get(position).getCollector_id()+" - Multiple KOT");
+                    holder.tableNo.setText(tableName+" - Multiple KOT");
                     holder.tableNo.setTextColor(context.getResources().getColor(R.color.white));
                 }else if (table_food_status.equals("2") && table_bar_status.equals("2")){
                     try {
@@ -115,7 +115,7 @@ public class TableDetailsAdapter extends RecyclerView.Adapter<TableDetailsAdapte
                     {
                         Log.e("Error", e.getStackTrace().toString());
                     }
-                    holder.tableNo.setText(tableListDetails.get(position).getCollector_id()+" - Multiple Billed");
+                    holder.tableNo.setText(tableName+" - Multiple Billed");
                     holder.tableNo.setTextColor(context.getResources().getColor(R.color.white));
                 }else {
                     try {
@@ -125,12 +125,12 @@ public class TableDetailsAdapter extends RecyclerView.Adapter<TableDetailsAdapte
                     {
                         Log.e("Error", e.getStackTrace().toString());
                     }
-                    holder.tableNo.setText(tableListDetails.get(position).getCollector_id()+" - Multiple Ordered");
+                    holder.tableNo.setText(tableName+" - Multiple Ordered");
                     holder.tableNo.setTextColor(context.getResources().getColor(R.color.white));
                 }
             }else{
                 if (table_food_status.equals("0") || table_bar_status.equals("0")){
-                    holder.tableNo.setText(tableListDetails.get(position).getCollector_id()+" - Ordered");
+                    holder.tableNo.setText(tableName+" - Ordered");
                     holder.tableNo.setTextColor(context.getResources().getColor(R.color.white));
                     try {
                         holder.mainDiv.setBackgroundColor(context.getResources().getColor(R.color.tableOrdered));
@@ -140,7 +140,7 @@ public class TableDetailsAdapter extends RecyclerView.Adapter<TableDetailsAdapte
                         Log.e("Error", e.getStackTrace().toString());
                     }
                 }else if (table_food_status.equals("1") || table_bar_status.equals("1")){
-                    holder.tableNo.setText(tableListDetails.get(position).getCollector_id()+" - KOT");
+                    holder.tableNo.setText(tableName+" - KOT");
                     holder.tableNo.setTextColor(context.getResources().getColor(R.color.white));
                     try {
                         holder.mainDiv.setBackgroundColor(context.getResources().getColor(R.color.tableKOT));
@@ -150,7 +150,7 @@ public class TableDetailsAdapter extends RecyclerView.Adapter<TableDetailsAdapte
                         Log.e("Error", e.getStackTrace().toString());
                     }
                 }else if (table_food_status.equals("2") || table_bar_status.equals("2")) {
-                    holder.tableNo.setText(tableListDetails.get(position).getCollector_id()+" - Billed");
+                    holder.tableNo.setText(tableName+" - Billed");
                     holder.tableNo.setTextColor(context.getResources().getColor(R.color.white));
                     try {
                         holder.mainDiv.setBackgroundColor(context.getResources().getColor(R.color.tableBilled));

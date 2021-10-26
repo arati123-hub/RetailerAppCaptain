@@ -670,11 +670,15 @@ public class RestaurantOrderActivity extends AppCompatActivity  implements OnMes
                                         }
                                         proObj.setProduct_description(proDetail.getString("product_description"));
                                         proObj.setProduct_price(proDetail.getString("product_price"));
+                                        if (proDetail.has("product_bar_code")){
+                                            proObj.setProduct_bar_code(proDetail.getString("product_bar_code"));
+                                        }
                                         productDetails.add(proObj);
                                     }
                                     sub_obj.setProductDetails(productDetails);
-                                    foodCategoryDetails.add(sub_obj);
+
                                 }
+                                foodCategoryDetails.add(sub_obj);
                             }
                         }
 
@@ -705,11 +709,15 @@ public class RestaurantOrderActivity extends AppCompatActivity  implements OnMes
                                         }
                                         proObj.setProduct_description(proDetail.getString("product_description"));
                                         proObj.setProduct_price(proDetail.getString("product_price"));
+                                        if (proDetail.has("product_bar_code")){
+                                            proObj.setProduct_bar_code(proDetail.getString("product_bar_code"));
+                                        }
                                         productDetails.add(proObj);
                                     }
                                     sub_obj.setProductDetails(productDetails);
-                                    barCategoryDetails.add(sub_obj);
+
                                 }
+                                barCategoryDetails.add(sub_obj);
                             }
                         }
 
