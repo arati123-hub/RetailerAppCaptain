@@ -51,7 +51,12 @@ public class TableSpinnerAdapter extends ArrayAdapter<TableListDetails> {
             label.setTextColor(Color.BLACK);
             // Then you can get the current item using the values array (Users array) and the current position
             // You can NOW reference each method you has created in your bean object (User class)
-            label.setText("Table "+values.get(position).getCollector_id());
+
+            String tableName = values.get(position).getCollector_name();
+            if (values.get(position).getCollector_status().equals("1")){
+                tableName = tableName + "-" + values.get(position).getCollector_split_series_no();
+            }
+            label.setText("Table "+tableName);
 
             // And finally return your dynamic (or custom) view for each spinner item
             return label;
@@ -64,7 +69,11 @@ public class TableSpinnerAdapter extends ArrayAdapter<TableListDetails> {
                                     ViewGroup parent) {
             TextView label = (TextView) super.getDropDownView(position, convertView, parent);
             label.setTextColor(Color.BLACK);
-            label.setText("Table "+values.get(position).getCollector_id());
+            String tableName = values.get(position).getCollector_name();
+            if (values.get(position).getCollector_status().equals("1")){
+                tableName = tableName + "-" + values.get(position).getCollector_split_series_no();
+            }
+            label.setText("Table "+tableName);
 
             return label;
         }

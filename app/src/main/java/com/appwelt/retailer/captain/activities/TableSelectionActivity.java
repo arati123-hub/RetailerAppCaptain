@@ -230,6 +230,8 @@ public class TableSelectionActivity extends AppCompatActivity  implements OnMess
                     obj.setCollector_name(jsonObj.getString("collector_name"));
                     obj.setCollector_image(jsonObj.getString("collector_image"));
                     obj.setCollector_type(jsonObj.getString("collector_type"));
+                    obj.setCollector_status(jsonObj.getString("collector_status"));
+                    obj.setCollector_split_series_no(jsonObj.getString("collector_split_series_no"));
 
                     if (jsonObj.has("food_data")){
                         JSONObject foodObj = jsonObj.getJSONObject("food_data");
@@ -569,8 +571,48 @@ public class TableSelectionActivity extends AppCompatActivity  implements OnMess
                 window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
                 AppCompatTextView edt_dialog_title = dialog.findViewById(R.id.edit_title);
-                AppCompatEditText edt_dialog_msg = dialog.findViewById(R.id.edit_msg);
+//                AppCompatEditText edt_dialog_msg = dialog.findViewById(R.id.edit_msg);
                 AppCompatTextView btn_dialog_cofirm = dialog.findViewById(R.id.confirm_button);
+                AppCompatSpinner spinner = dialog.findViewById(R.id.table);
+
+                ArrayList<TableListDetails> tableList = new ArrayList<>();
+                if (Halltables != null){
+                    for (int i=0;i<Halltables.size();i++){
+
+                        String fstatus = "", bstatus = "";
+
+                        if (Halltables.get(i).getFood_data()!= null){
+                            if (Halltables.get(i).getFood_data().getStatus()!=null){
+                                fstatus = Halltables.get(i).getFood_data().getStatus();
+                            }
+                        }
+                        if (Halltables.get(i).getBar_data()!= null){
+                            if (Halltables.get(i).getBar_data().getStatus()!=null){
+                                bstatus = Halltables.get(i).getBar_data().getStatus();
+                            }
+                        }
+
+                        if (fstatus.equals("") && fstatus.equals("") && bstatus.equals("") && bstatus.equals("") ){
+                            if (!Halltables.get(i).getCollector_id().equals(selectedTable)){
+                                if (!Halltables.get(i).getCollector_name().equals("6") && !Halltables.get(i).getCollector_name().equals("13")){
+                                    if (Halltables.get(i).getCollector_status().equals("0")){
+                                        tableList.add(Halltables.get(i));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (tableList!=null){
+                    if (tableList != null && tableList.size() > 0) {
+                        TableSpinnerAdapter adapter = new TableSpinnerAdapter(TableSelectionActivity.this,
+                                R.layout.spinner_dropdown_item, tableList);
+                        adapter.setDropDownViewResource(R.layout.custom_checked_spinner_layout);
+                        adapter.notifyDataSetChanged();
+                        spinner.setAdapter(adapter);
+                    }
+                }
 
                 edt_dialog_title.setText(getResources().getString(R.string.app_name));
                 edt_dialog_title.setOnClickListener(new View.OnClickListener() {
@@ -583,7 +625,7 @@ public class TableSelectionActivity extends AppCompatActivity  implements OnMess
                 btn_dialog_cofirm.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        String tableNo = edt_dialog_msg.getText().toString();
+                        String tableNo = tableList.get(spinner.getSelectedItemPosition()).getCollector_id();
 
                         CaptainOrderService.getInstance().sendCommand(Constants.cmdChangeTable + SharedPref.getString(TableSelectionActivity.this, "device_id") + "#{'destination_table':'" + tableNo + "','source_table':'" + selectedTable + "','section_id':'" + selectedSection+"'}");
                         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
@@ -592,7 +634,7 @@ public class TableSelectionActivity extends AppCompatActivity  implements OnMess
                 });
 
                 edt_dialog_title.setTypeface(FontStyle.getFontRegular());
-                edt_dialog_msg.setTypeface(FontStyle.getFontRegular());
+//                edt_dialog_msg.setTypeface(FontStyle.getFontRegular());
                 btn_dialog_cofirm.setTypeface(FontStyle.getFontRegular());
 
                 dialog.setCanceledOnTouchOutside(false);

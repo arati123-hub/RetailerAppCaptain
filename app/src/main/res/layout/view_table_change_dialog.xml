@@ -29,20 +29,21 @@
             android:drawablePadding="10dp"/>
 
     </LinearLayout>
-    <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/edit_msg"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:textColor="@color/black"
-        android:textSize="@dimen/text_size"
-        android:padding="10dp"
-        android:hint="@string/table_no"
+        android:layout_marginTop="3dp"
         android:background="@drawable/back_trans_black"
-        android:textColorHint="@color/gray"
-        android:inputType="number"
-        android:singleLine="true"
-        android:imeOptions="actionDone"/>
+        android:orientation="vertical"
+        android:layout_margin="10dp">
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/table"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:spinnerMode="dropdown"
+            android:popupBackground="@color/white"
+            android:theme="@style/Theme.MaterialComponents.Light"/>
+    </LinearLayout>
     <androidx.cardview.widget.CardView
         android:layout_width="100dp"
         android:layout_height="wrap_content"

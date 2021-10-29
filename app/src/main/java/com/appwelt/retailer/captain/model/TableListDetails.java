@@ -18,13 +18,28 @@ public class TableListDetails {
     @SerializedName("collector_type")
     @Expose
     private String collector_type;
-//    @SerializedName("collector_status_food")
-//    @Expose
-//    private String collector_status_food;
-//
-//    @SerializedName("collector_status_bar")
-//    @Expose
-//    private String collector_status_bar;
+    @SerializedName("collector_status")
+    @Expose
+    private String collector_status;
+    @SerializedName("collector_split_series_no")
+    @Expose
+    private String collector_split_series_no;
+
+    public String getCollector_status() {
+        return collector_status;
+    }
+
+    public void setCollector_status(String collector_status) {
+        this.collector_status = collector_status;
+    }
+
+    public String getCollector_split_series_no() {
+        return collector_split_series_no;
+    }
+
+    public void setCollector_split_series_no(String collector_split_series_no) {
+        this.collector_split_series_no = collector_split_series_no;
+    }
 
     @SerializedName("food_data")
     @Expose
@@ -181,6 +196,8 @@ public class TableListDetails {
                 ", collector_name='" + collector_name + '\'' +
                 ", collector_image='" + collector_image + '\'' +
                 ", collector_type='" + collector_type + '\'' +
+                ", collector_status='" + collector_status + '\'' +
+                ", collector_split_series_no='" + collector_split_series_no + '\'' +
                 ", food_data=" + food_data +
                 ", bar_data=" + bar_data +
                 '}';
