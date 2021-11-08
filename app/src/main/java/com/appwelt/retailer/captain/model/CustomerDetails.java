@@ -73,15 +73,5 @@ public class CustomerDetails {
         this.bill_created_by = bill_created_by;
     }
 
-    @Override
-    public String toString() {
-        return "CustomerDetails{" +
-                "customer_id='" + customer_id + '\'' +
-                ", customer_mobile_no='" + customer_mobile_no + '\'' +
-                ", customer_name='" + customer_name + '\'' +
-                ", customer_address='" + customer_address + '\'' +
-                ", bill_created_on='" + bill_created_on + '\'' +
-                ", bill_created_by='" + bill_created_by + '\'' +
-                '}';
-    }
+
 }

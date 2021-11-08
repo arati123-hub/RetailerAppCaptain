@@ -364,4 +364,12 @@
     <string name="kot_pending">KOT not yet print for selected items</string>
     <string name="unable_get_product">Unable to download the product.</string>
     <string name="unable_get_iamges">Unable to download the images.</string>
+    <string name="failed_with_server_call">Failed with Server Call.</string>
+    <string name="plus_10">+ 10</string>
+    <string name="plus_20">+ 20</string>
+    <string name="plus_50">+ 50</string>
+    <string name="plus_100">+ 100</string>
+    <string name="allow_to_print_extra_item_in_bill">Allow to print extra items in bill</string>
+    <string name="powered_by">Powered By</string>
+    <string name="powercraft_electronics">PowerCraft Electronics Pvt. Ltd.</string>
 </resources>

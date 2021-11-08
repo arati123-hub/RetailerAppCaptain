@@ -23,7 +23,6 @@ import com.appwelt.retailer.captain.utils.DateConversionClass;
 import com.appwelt.retailer.captain.utils.FontStyle;
 import com.appwelt.retailer.captain.utils.GenerateRandom;
 import com.appwelt.retailer.captain.utils.SharedPref;
-import com.appwelt.retailer.captain.utils.sqlitedatabase.DatabaseHelper;
 
 import java.util.ArrayList;
 
@@ -64,10 +63,6 @@ public class ExtraItemListAdapter extends RecyclerView.Adapter<ExtraItemListAdap
         FontStyle.FontStyle(context);
         holder.itemName.setTypeface(FontStyle.getFontRegular());
         holder.itemPrice.setTypeface(FontStyle.getFontRegular());
-//        holder.itemId.setTypeface(FontStyle.getFontRegular());
-
-        String DATABASE_NAME = SharedPref.getString(context,"database_name");
-        DatabaseHelper databaseHelper = new DatabaseHelper(context,DATABASE_NAME);
 
         if (response.get(position).getExtra_item_id().equals("0")){
             holder.itemName.setText(context.getResources().getString(R.string.add_new));
@@ -85,7 +80,7 @@ public class ExtraItemListAdapter extends RecyclerView.Adapter<ExtraItemListAdap
             @Override
             public void onClick(View view) {
                 if (response.get(position).getExtra_item_id().equals("0")){
-                    addMenuItem(response.get(position));
+//                    addMenuItem(response.get(position));
                 }else{
                     listener.onItemClick(response.get(position));
                 }
@@ -93,102 +88,100 @@ public class ExtraItemListAdapter extends RecyclerView.Adapter<ExtraItemListAdap
         });
     }
 
-    private void addMenuItem(ExtraItem extraItem) {
-        Dialog customDialog = new Dialog(context);
-        customDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        customDialog.setContentView(R.layout.view_add_extra_item_dialog);
-        customDialog.setCancelable(true);
-        customDialog.setCanceledOnTouchOutside(true);
-        Window window = customDialog.getWindow();
-        assert window != null;
-        window.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-
-        AppCompatTextView dialogTitle = customDialog.findViewById(R.id.edit_title);
-        AppCompatTextView selectTxt = customDialog.findViewById(R.id.select_txt);
-        AppCompatTextView txtName = customDialog.findViewById(R.id.txt_name);
-        AppCompatTextView txtPrice = customDialog.findViewById(R.id.txt_price);
-
-        AppCompatTextView btnSubmit = customDialog.findViewById(R.id.btn_submit);
-        AppCompatTextView btnDelete = customDialog.findViewById(R.id.btn_delete);
-
-        AppCompatEditText edtName = customDialog.findViewById(R.id.edt_name);
-        AppCompatEditText edtPrice = customDialog.findViewById(R.id.edt_price);
-
-        LinearLayout dragDropText = customDialog.findViewById(R.id.drapDiv);
-
-        dialogTitle.setTypeface(FontStyle.getFontRegular());
-        selectTxt.setTypeface(FontStyle.getFontRegular());
-        txtName.setTypeface(FontStyle.getFontRegular());
-        txtPrice.setTypeface(FontStyle.getFontRegular());
-        edtName.setTypeface(FontStyle.getFontRegular());
-        edtPrice.setTypeface(FontStyle.getFontRegular());
-        btnSubmit.setTypeface(FontStyle.getFontRegular());
-
-        String DATABASE_NAME = SharedPref.getString(context,"database_name");
-        DatabaseHelper databaseHelper = new DatabaseHelper(context,DATABASE_NAME);
-
-        btnDelete.setVisibility(View.GONE);
-        dialogTitle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                customDialog.dismiss();
-            }
-        });
-        dragDropText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                importCSVMenuItem(category_id);
+//    private void addMenuItem(ExtraItem extraItem) {
+//        Dialog customDialog = new Dialog(context);
+//        customDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        customDialog.setContentView(R.layout.view_add_extra_item_dialog);
+//        customDialog.setCancelable(true);
+//        customDialog.setCanceledOnTouchOutside(true);
+//        Window window = customDialog.getWindow();
+//        assert window != null;
+//        window.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+//
+//        AppCompatTextView dialogTitle = customDialog.findViewById(R.id.edit_title);
+//        AppCompatTextView selectTxt = customDialog.findViewById(R.id.select_txt);
+//        AppCompatTextView txtName = customDialog.findViewById(R.id.txt_name);
+//        AppCompatTextView txtPrice = customDialog.findViewById(R.id.txt_price);
+//
+//        AppCompatTextView btnSubmit = customDialog.findViewById(R.id.btn_submit);
+//        AppCompatTextView btnDelete = customDialog.findViewById(R.id.btn_delete);
+//
+//        AppCompatEditText edtName = customDialog.findViewById(R.id.edt_name);
+//        AppCompatEditText edtPrice = customDialog.findViewById(R.id.edt_price);
+//
+//        LinearLayout dragDropText = customDialog.findViewById(R.id.drapDiv);
+//
+//        dialogTitle.setTypeface(FontStyle.getFontRegular());
+//        selectTxt.setTypeface(FontStyle.getFontRegular());
+//        txtName.setTypeface(FontStyle.getFontRegular());
+//        txtPrice.setTypeface(FontStyle.getFontRegular());
+//        edtName.setTypeface(FontStyle.getFontRegular());
+//        edtPrice.setTypeface(FontStyle.getFontRegular());
+//        btnSubmit.setTypeface(FontStyle.getFontRegular());
+//
+//
+//        btnDelete.setVisibility(View.GONE);
+//        dialogTitle.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
 //                customDialog.dismiss();
-            }
-        });
-
-        btnSubmit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String name = edtName.getText().toString();
-                String price = edtPrice.getText().toString();
-                if (name.isEmpty()){
-                    edtName.setError(context.getResources().getString(R.string.field_required));
-                }else if (price.isEmpty()){
-                    edtPrice.setError(context.getResources().getString(R.string.field_required));
-                }else {
-
-                    String LangId = new GenerateRandom().getRandomString();
-                    String proId = new GenerateRandom().getRandomString();
-
-                    ContentValues nameLangValues = new ContentValues();
-                    nameLangValues.put("language_text_id", LangId);
-                    nameLangValues.put("language_id", context.getResources().getString(R.string.langauge_selected));
-                    nameLangValues.put("language_text", name);
-                    nameLangValues.put("language_reference_id", "EN_"+proId);
-                    nameLangValues.put("table_id", proId);
-                    nameLangValues.put("language_created_on", new DateConversionClass().currentDateApoch());
-                    nameLangValues.put("language_created_by", SharedPref.getString(context,"organisation_id"));
-
-                    ContentValues provalues = new ContentValues();
-                    provalues.put("extra_item_id", proId);
-                    provalues.put("extra_item_name",LangId );
-                    provalues.put("extra_item_price", price);
-                    provalues.put("extra_item_created_on", new DateConversionClass().currentDateApoch());
-                    provalues.put("extra_item_created_by", SharedPref.getString(context,"organisation_id"));
-
-                    String DATABASE_NAME = SharedPref.getString(context,"database_name");
-                    DatabaseHelper dataBaseHelper = new DatabaseHelper(context,DATABASE_NAME);
-                    if (dataBaseHelper.insertDetails(nameLangValues, "tbl_language_text")){
-                        if (dataBaseHelper.insertDetails(provalues, "tbl_extra_item")){
-                            listener.onItemClick(extraItem);
-                            customDialog.dismiss();
-                        }else{ DialogBox(context.getResources().getString(R.string.extra_item_insert_fail)); }
-                    }else{ DialogBox(context.getResources().getString(R.string.product_name_insert_fail)); }
-                }
-            }
-        });
-
-        dialogTitle.setText(context.getResources().getString(R.string.add_extra_item));
-        customDialog.setCanceledOnTouchOutside(false);
-        customDialog.setCancelable(false);
-        customDialog.show();
-    }
+//            }
+//        });
+//        dragDropText.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+////                importCSVMenuItem(category_id);
+////                customDialog.dismiss();
+//            }
+//        });
+//
+//        btnSubmit.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                String name = edtName.getText().toString();
+//                String price = edtPrice.getText().toString();
+//                if (name.isEmpty()){
+//                    edtName.setError(context.getResources().getString(R.string.field_required));
+//                }else if (price.isEmpty()){
+//                    edtPrice.setError(context.getResources().getString(R.string.field_required));
+//                }else {
+//
+//                    String LangId = new GenerateRandom().getRandomString();
+//                    String proId = new GenerateRandom().getRandomString();
+//
+//                    ContentValues nameLangValues = new ContentValues();
+//                    nameLangValues.put("language_text_id", LangId);
+//                    nameLangValues.put("language_id", context.getResources().getString(R.string.langauge_selected));
+//                    nameLangValues.put("language_text", name);
+//                    nameLangValues.put("language_reference_id", "EN_"+proId);
+//                    nameLangValues.put("table_id", proId);
+//                    nameLangValues.put("language_created_on", new DateConversionClass().currentDateApoch());
+//                    nameLangValues.put("language_created_by", SharedPref.getString(context,"organisation_id"));
+//
+//                    ContentValues provalues = new ContentValues();
+//                    provalues.put("extra_item_id", proId);
+//                    provalues.put("extra_item_name",LangId );
+//                    provalues.put("extra_item_price", price);
+//                    provalues.put("extra_item_created_on", new DateConversionClass().currentDateApoch());
+//                    provalues.put("extra_item_created_by", SharedPref.getString(context,"organisation_id"));
+//
+//                    String DATABASE_NAME = SharedPref.getString(context,"database_name");
+//                    DatabaseHelper dataBaseHelper = new DatabaseHelper(context,DATABASE_NAME);
+//                    if (dataBaseHelper.insertDetails(nameLangValues, "tbl_language_text")){
+//                        if (dataBaseHelper.insertDetails(provalues, "tbl_extra_item")){
+//                            listener.onItemClick(extraItem);
+//                            customDialog.dismiss();
+//                        }else{ DialogBox(context.getResources().getString(R.string.extra_item_insert_fail)); }
+//                    }else{ DialogBox(context.getResources().getString(R.string.product_name_insert_fail)); }
+//                }
+//            }
+//        });
+//
+//        dialogTitle.setText(context.getResources().getString(R.string.add_extra_item));
+//        customDialog.setCanceledOnTouchOutside(false);
+//        customDialog.setCancelable(false);
+//        customDialog.show();
+//    }
 
     @Override
     public int getItemCount() {

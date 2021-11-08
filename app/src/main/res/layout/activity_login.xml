@@ -36,7 +36,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="5dp"
-                    android:text="Powered By"
+                    android:text="@string/powered_by"
                     android:textAlignment="center"
                     android:layout_gravity="bottom"
                     android:textColor="@color/black"
@@ -44,7 +44,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="PowerCraft Electronics Pvt. Ltd."
+                    android:text="@string/powercraft_electronics"
                     android:textAlignment="center"
                     android:layout_gravity="bottom"
                     android:layout_marginBottom="5dp"

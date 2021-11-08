@@ -428,7 +428,7 @@
                                         android:id="@+id/btn_10_plus"
                                         android:layout_width="match_parent"
                                         android:layout_height="45dp"
-                                        android:text="+ 10"
+                                        android:text="@string/plus_10"
                                         android:textSize="@dimen/medium_text"
                                         android:layout_gravity="center"
                                         android:gravity="center"
@@ -437,7 +437,7 @@
                                         android:id="@+id/btn_20_plus"
                                         android:layout_width="match_parent"
                                         android:layout_height="match_parent"
-                                        android:text="+ 20"
+                                        android:text="@string/plus_20"
                                         android:textSize="@dimen/medium_text"
                                         android:layout_gravity="center"
                                         android:gravity="center"
@@ -446,7 +446,7 @@
                                         android:id="@+id/btn_50_plus"
                                         android:layout_width="match_parent"
                                         android:layout_height="match_parent"
-                                        android:text="+ 50"
+                                        android:text="@string/plus_50"
                                         android:textSize="@dimen/medium_text"
                                         android:layout_gravity="center"
                                         android:gravity="center"
@@ -455,7 +455,7 @@
                                         android:id="@+id/btn_100_plus"
                                         android:layout_width="match_parent"
                                         android:layout_height="match_parent"
-                                        android:text="+ 100"
+                                        android:text="@string/plus_100"
                                         android:textSize="@dimen/medium_text"
                                         android:layout_gravity="center"
                                         android:gravity="center"
@@ -775,7 +775,7 @@
                     android:id="@+id/allow_extra_item"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Allow to print extra items in bill"
+                    android:text="@string/allow_to_print_extra_item_in_bill"
                     android:textColor="@color/black"
                     android:buttonTint="@color/black"
                     android:textSize="@dimen/medium_text"
@@ -971,22 +971,6 @@
                 android:padding="7dp"
                 android:layout_gravity="center"
                 android:gravity="center"/>
-<!--            <androidx.appcompat.widget.AppCompatTextView-->
-<!--                android:id="@+id/btn_payment"-->
-<!--                android:layout_width="70dp"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="@string/payment"-->
-<!--                android:layout_margin="7dp"-->
-<!--                android:background="@drawable/back_whiteblack"-->
-<!--                android:textColor="@color/black"-->
-<!--                android:drawableTop="@drawable/reciept"-->
-<!--                android:textSize="@dimen/small_text"-->
-<!--                android:fontFamily="sans-serif"-->
-<!--                android:padding="7dp"-->
-<!--                android:layout_gravity="center"-->
-<!--                android:gravity="center"-->
-<!--                android:visibility="gone"-->
-<!--                android:onClick="onPaymentOptionClick"/>-->
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/btn_reprint_bill"
                 android:layout_width="70dp"

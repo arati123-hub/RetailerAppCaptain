@@ -17,8 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.appwelt.retailer.captain.R;
 import com.appwelt.retailer.captain.model.CategoryDetails;
 import com.appwelt.retailer.captain.utils.FontStyle;
-import com.appwelt.retailer.captain.utils.SharedPref;
-import com.appwelt.retailer.captain.utils.sqlitedatabase.DatabaseHelper;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -51,8 +49,6 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         FontStyle.FontStyle(context);
 
-        //String DATABASE_NAME = SharedPref.getString(context,"database_name");
-        //DatabaseHelper databaseHelper = new DatabaseHelper(context,DATABASE_NAME);
         holder.itemName.setTypeface(FontStyle.getFontRegular());
         holder.itemId.setTypeface(FontStyle.getFontRegular());
         holder.itemName1.setTypeface(FontStyle.getFontRegular());
@@ -86,8 +82,6 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
 
         String srNo = responseData.get(position).getCategory_id();
         String catType = responseData.get(position).getCategory_type();
-        //String srNo = databaseHelper.selectByID("tbl_category","category_id",responseData.get(position).getCategory_id(),"sequence_nr");
-        //String catType = databaseHelper.selectByID("tbl_category","category_id",responseData.get(position).getCategory_id(),"category_type");
          if (catType.equals("1")){
             holder.itemId.setText("FCAT0"+srNo);
             holder.itemId1.setText("FCAT0"+srNo);

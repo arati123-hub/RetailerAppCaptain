@@ -440,7 +440,7 @@
                 android:id="@+id/btn_bill"
                 android:layout_width="70dp"
                 android:layout_height="50dp"
-                android:text="Bill"
+                android:text="@string/bill"
                 android:layout_margin="7dp"
                 android:background="@drawable/back_whiteblack"
                 android:textColor="@color/black"

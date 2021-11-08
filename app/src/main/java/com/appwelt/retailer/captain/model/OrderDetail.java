@@ -71,15 +71,5 @@ public class OrderDetail {
         this.product_kot_yn = product_kot_yn;
     }
 
-    @Override
-    public String toString() {
-        return "OrderDetail{" +
-                "product_id='" + product_id + '\'' +
-                ", product_name='" + product_name + '\'' +
-                ", product_quantity='" + product_quantity + '\'' +
-                ", product_price='" + product_price + '\'' +
-                ", product_special_note='" + product_special_note + '\'' +
-                ", product_kot_yn='" + product_kot_yn + '\'' +
-                '}';
-    }
+
 }

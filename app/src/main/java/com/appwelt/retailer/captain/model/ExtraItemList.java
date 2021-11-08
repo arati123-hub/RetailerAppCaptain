@@ -94,16 +94,5 @@ public class ExtraItemList {
         this.order_extra_item_kot_yn = order_extra_item_kot_yn;
     }
 
-    @Override
-    public String toString() {
-        return "OrderExtraItem{" +
-                "order_extra_item_id='" + order_extra_item_id + '\'' +
-                ", order_id='" + order_id + '\'' +
-                ", order_extra_item_name='" + order_extra_item_name + '\'' +
-                ", order_extra_item_qty='" + order_extra_item_qty + '\'' +
-                ", order_extra_item_price='" + order_extra_item_price + '\'' +
-                ", order_extra_item_created_by='" + order_extra_item_created_by + '\'' +
-                ", order_extra_item_created_on='" + order_extra_item_created_on + '\'' +
-                '}';
-    }
+
 }

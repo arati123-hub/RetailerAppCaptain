@@ -15,21 +15,15 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import androidx.appcompat.widget.AppCompatButton;
-import androidx.appcompat.widget.AppCompatEditText;
-import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.appwelt.retailer.captain.R;
 import com.appwelt.retailer.captain.activities.TableSelectionActivity;
-import com.appwelt.retailer.captain.model.ExtraItem;
 import com.appwelt.retailer.captain.model.ExtraItemList;
-import com.appwelt.retailer.captain.model.OrderDetail;
 import com.appwelt.retailer.captain.utils.FontStyle;
 import com.appwelt.retailer.captain.utils.SharedPref;
-import com.appwelt.retailer.captain.utils.sqlitedatabase.DatabaseHelper;
 
 import java.util.List;
 
@@ -71,8 +65,6 @@ public class ExtraListAdapter extends RecyclerView.Adapter<ExtraListAdapter.MyVi
             holder.itemQuanitity.setTypeface(FontStyle.getFontRegular());
             holder.itemAmount.setTypeface(FontStyle.getFontRegular());
 
-            String DATABASE_NAME = SharedPref.getString(context,"database_name");
-            DatabaseHelper databaseHelper = new DatabaseHelper(context,DATABASE_NAME);
             holder.itemName.setText(response.get(position).getOrder_extra_item_name());
             holder.itemPrice.setText(response.get(position).getOrder_extra_item_price());
             holder.itemQuanitity.setText(response.get(position).getOrder_extra_item_qty());

@@ -4,72 +4,42 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.appcompat.widget.AppCompatTextView;
-import androidx.appcompat.widget.LinearLayoutCompat;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.ContentValues;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.hardware.usb.UsbDeviceConnection;
-import android.hardware.usb.UsbEndpoint;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
-import com.android.print.sdk.PrinterConstants;
-import com.android.print.sdk.PrinterInstance;
 import com.appwelt.retailer.captain.R;
 import com.appwelt.retailer.captain.adapter.TableDetailsAdapter;
 import com.appwelt.retailer.captain.adapter.spinner_adapter.TableSpinnerAdapter;
-import com.appwelt.retailer.captain.model.BillDetail;
-import com.appwelt.retailer.captain.model.BillFormatDetails;
-import com.appwelt.retailer.captain.model.OrderDetails;
-import com.appwelt.retailer.captain.model.PrinterDetails;
 import com.appwelt.retailer.captain.model.TableListDetails;
-import com.appwelt.retailer.captain.printer.BluetoothOperation;
-import com.appwelt.retailer.captain.printer.IPrinterOpertion;
-import com.appwelt.retailer.captain.printer.UsbGenericPrinter;
-import com.appwelt.retailer.captain.printer.UsbOperation;
-import com.appwelt.retailer.captain.printer.WifiOperation;
-import com.appwelt.retailer.captain.printer.utils.PrintUtils;
 import com.appwelt.retailer.captain.services.CaptainOrderService;
 import com.appwelt.retailer.captain.services.MessageDeframer;
 import com.appwelt.retailer.captain.services.OnMessageListener;
 import com.appwelt.retailer.captain.utils.Constants;
-import com.appwelt.retailer.captain.utils.DateConversionClass;
 import com.appwelt.retailer.captain.utils.FontStyle;
-import com.appwelt.retailer.captain.utils.GenerateRandom;
 import com.appwelt.retailer.captain.utils.SharedPref;
-import com.appwelt.retailer.captain.utils.sqlitedatabase.DatabaseHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileOutputStream;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 public class TableSelectionActivity extends AppCompatActivity  implements OnMessageListener  {
 
     private static final String TAG = "TABLE_SELECTION";
 
-    DatabaseHelper dataBaseHelper;
     RecyclerView recyclerView;
     String selectedTableType="",selectedTable = "", selectedSection = "";
 
@@ -304,7 +274,13 @@ public class TableSelectionActivity extends AppCompatActivity  implements OnMess
                         if (foodBillId == null){ foodBillId = ""; }
                         if (barBillId == null){ barBillId = ""; }
 
-                        SharedPref.putString(TableSelectionActivity.this,"table_name",item.getCollector_name());
+                        String table_name = item.getCollector_name();
+                        if (item.getCollector_status().equals("1")){
+                            String[] series_name = {"","A","B","C","D"};
+                            table_name = table_name + "-" + series_name[Integer.valueOf(item.getCollector_split_series_no())];
+                        }
+
+                        SharedPref.putString(TableSelectionActivity.this,"table_name",table_name);
                         SharedPref.putString(TableSelectionActivity.this,"food_table_status",foodStatus);
                         SharedPref.putString(TableSelectionActivity.this,"bar_table_status",barStatus);
                         SharedPref.putString(TableSelectionActivity.this,"food_order_id",foodOrderId);
@@ -331,10 +307,6 @@ public class TableSelectionActivity extends AppCompatActivity  implements OnMess
 
         SharedPref.putString(TableSelectionActivity.this,"bill_type","table");
 
-        String DATABASE_NAME = SharedPref.getString(TableSelectionActivity.this,"database_name");
-        if (DATABASE_NAME != null && DATABASE_NAME.length()!=0){
-            dataBaseHelper=new DatabaseHelper(this,DATABASE_NAME);
-        }
 
         bill_title = findViewById(R.id.bill_title);
         change_table_title = findViewById(R.id.change_table_title);
@@ -387,9 +359,6 @@ public class TableSelectionActivity extends AppCompatActivity  implements OnMess
         }else{
             String table_food_status =  foodStatus;
             String table_bar_status = barStatus;
-
-            Log.i(TAG, "OnBillOptionClick: "+foodStatus);
-            Log.i(TAG, "OnBillOptionClick: "+barStatus);
 
             if (table_food_status.length()!=0 && table_bar_status.length()!=0){
                 if (table_food_status.equals("2") && table_bar_status.equals("2")){

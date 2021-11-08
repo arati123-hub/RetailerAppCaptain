@@ -21,8 +21,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.appwelt.retailer.captain.R;
 import com.appwelt.retailer.captain.model.TableListDetails;
 import com.appwelt.retailer.captain.utils.FontStyle;
-import com.appwelt.retailer.captain.utils.SharedPref;
-import com.appwelt.retailer.captain.utils.sqlitedatabase.DatabaseHelper;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -72,14 +70,6 @@ public class TableDetailsAdapter extends RecyclerView.Adapter<TableDetailsAdapte
                 holder.tableNo.setTextColor(context.getResources().getColor(R.color.black));
             }
         }
-
-//        File imgFile = new File(Environment.getExternalStorageDirectory()+"/RetailerApp/images/"+tableListDetails.get(position).getCollector_image());
-//        if(imgFile.exists()){
-//            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-//            holder.tableImage.setImageBitmap(myBitmap);
-//        }else{
-//            holder.tableImage.setImageDrawable(context.getResources().getDrawable(R.drawable.table));
-//        }
 
         String table_food_status =  "", table_bar_status =  "";
 
@@ -175,8 +165,6 @@ public class TableDetailsAdapter extends RecyclerView.Adapter<TableDetailsAdapte
 
         if (tableListDetails.get(position).getCollector_id().equals("6") || tableListDetails.get(position).getCollector_id().equals("13")){
             holder.tableNo.setVisibility(View.GONE);
-//            holder.tableImage.setVisibility(View.GONE);
-//            holder.tableTitle.setBackgroundColor(context.getResources().getColor(R.color.gray));
             holder.mainDiv.setBackgroundColor(context.getResources().getColor(R.color.gray));
         }
 
@@ -208,14 +196,12 @@ public class TableDetailsAdapter extends RecyclerView.Adapter<TableDetailsAdapte
 
         protected AppCompatTextView tableNo, tableTitle;
         CardView cardMain;
-//        ImageView tableImage;
         CoordinatorLayout mainDiv;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             tableNo = itemView.findViewById(R.id.table_no);
             tableTitle = itemView.findViewById(R.id.table_title);
-//            tableImage = itemView.findViewById(R.id.table_img);
             cardMain = itemView.findViewById(R.id.main_card);
             mainDiv = itemView.findViewById(R.id.main_div);
         }

@@ -60,7 +60,7 @@
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="5dp"
                 android:layout_margin="20dp"
-                app:cardBackgroundColor="@color/black"
+                app:cardBackgroundColor="@color/balajimaroon"
                 android:layout_gravity="center">
                 <TextView
                     android:id="@+id/btn_submit"
@@ -83,6 +83,6 @@
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:src="@drawable/ic_close"
-        android:tint="@color/black"
+        android:tint="@color/balajimaroon"
         android:layout_gravity="right"/>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

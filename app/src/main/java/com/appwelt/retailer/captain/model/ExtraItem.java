@@ -62,14 +62,5 @@ public class ExtraItem {
         this.extra_item_created_on = extra_item_created_on;
     }
 
-    @Override
-    public String toString() {
-        return "ExtraItem{" +
-                "extra_item_id='" + extra_item_id + '\'' +
-                ", extra_item_name='" + extra_item_name + '\'' +
-                ", extra_item_price='" + extra_item_price + '\'' +
-                ", extra_item_created_by='" + extra_item_created_by + '\'' +
-                ", extra_item_created_on='" + extra_item_created_on + '\'' +
-                '}';
-    }
+
 }

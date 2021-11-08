@@ -91,62 +91,6 @@ public class CategoryDetails {
         this.category_type = category_type;
     }
 
-    //    public String getCategory_icon() {
-//        return category_icon;
-//    }
-//
-//    public void setCategory_icon(String category_icon) {
-//        this.category_icon = category_icon;
-//    }
-//
-//    public String getCategory_order() {
-//        return category_order;
-//    }
-//
-//    public void setCategory_order(String category_order) {
-//        this.category_order = category_order;
-//    }
-//
-//    public String getCategory_created_on() {
-//        return category_created_on;
-//    }
-//
-//    public void setCategory_created_on(String category_created_on) {
-//        this.category_created_on = category_created_on;
-//    }
-//
-//    public String getCategory_created_by() {
-//        return category_created_by;
-//    }
-//
-//    public void setCategory_created_by(String category_created_by) {
-//        this.category_created_by = category_created_by;
-//    }
-//
-//    public String getCategory_modified_on() {
-//        return category_modified_on;
-//    }
-//
-//    public void setCategory_modified_on(String category_modified_on) {
-//        this.category_modified_on = category_modified_on;
-//    }
-//
-//    public String getCategory_modified_by() {
-//        return category_modified_by;
-//    }
-//
-//    public void setCategory_modified_by(String category_modified_by) {
-//        this.category_modified_by = category_modified_by;
-//    }
-//
-//    public String getCategory_is_deleted() {
-//        return category_is_deleted;
-//    }
-//
-//    public void setCategory_is_deleted(String category_is_deleted) {
-//        this.category_is_deleted = category_is_deleted;
-//    }
-
     public List<ProductDetails> getProductDetails() {
         return productDetails;
     }
@@ -155,23 +99,4 @@ public class CategoryDetails {
         this.productDetails = productDetails;
     }
 
-    @Override
-    public String toString() {
-        return "CategoryDetails{" +
-                "category_id='" + category_id + '\'' +
-                ", category_name='" + category_name + '\'' +
-                ", category_description='" + category_description + '\'' +
-                ", sequence_nr='" + sequence_nr + '\'' +
-                ", parent_id='" + parent_id + '\'' +
-                ", category_image='" + category_image + '\'' +
-//                ", category_icon='" + category_icon + '\'' +
-//                ", category_order='" + category_order + '\'' +
-//                ", category_created_on='" + category_created_on + '\'' +
-//                ", category_created_by='" + category_created_by + '\'' +
-//                ", category_modified_on='" + category_modified_on + '\'' +
-//                ", category_modified_by='" + category_modified_by + '\'' +
-//                ", category_is_deleted='" + category_is_deleted + '\'' +
-                ", productDetails=" + productDetails +
-                '}';
-    }
 }

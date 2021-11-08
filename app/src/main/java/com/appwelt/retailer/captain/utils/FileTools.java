@@ -216,6 +216,9 @@ public class FileTools {
 		File logDirectory = new File(Environment.getExternalStorageDirectory().getPath() + "/" + Constants.FOLDER_NAME);
 		File file = new File(logDirectory, Constants.LOG_FILE_NAME);
 
+		if (!logDirectory.exists()) {
+			logDirectory.mkdir();
+		}
 		if (!file.exists()) {
 			try {
 				Log.e("File created ", "File created.");
@@ -224,10 +227,6 @@ public class FileTools {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
-		else
-		{
-
 		}
 
 		try {

@@ -95,17 +95,4 @@ public class OrderItemDetails {
         this.rate = rate;
     }
 
-    @Override
-    public String toString() {
-        return "OrderItemDetails{" +
-                "MIID='" + MIID + '\'' +
-                ", MICategoryID='" + MICategoryID + '\'' +
-                ", MINr='" + MINr + '\'' +
-                ", MIShortName='" + MIShortName + '\'' +
-                ", MIDescription='" + MIDescription + '\'' +
-                ", Price='" + Price + '\'' +
-                ", Quantity='" + Quantity + '\'' +
-                ", rate='" + rate + '\'' +
-                '}';
-    }
 }

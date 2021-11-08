@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@color/black"
+        android:background="@color/balajimaroon"
         android:gravity="center"
         android:orientation="horizontal"
         android:paddingLeft="15dp"
@@ -55,7 +55,7 @@
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         app:cardCornerRadius="5dp"
-        app:cardBackgroundColor="@color/black"
+        app:cardBackgroundColor="@color/balajimaroon"
         android:layout_gravity="center|right"
         android:layout_margin="10dp">
         <androidx.appcompat.widget.AppCompatTextView

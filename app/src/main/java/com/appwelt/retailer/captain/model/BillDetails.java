@@ -150,22 +150,5 @@ public class BillDetails {
         this.bill_created_by = bill_created_by;
     }
 
-    @Override
-    public String toString() {
-        return "BillDetails{" +
-                "bill_id='" + bill_id + '\'' +
-                ", order_id='" + order_id + '\'' +
-                ", organisation_id='" + organisation_id + '\'' +
-                ", branch_id='" + branch_id + '\'' +
-                ", customer_name='" + customer_name + '\'' +
-                ", customer_mobile_no='" + customer_mobile_no + '\'' +
-                ", bill_amount='" + bill_amount + '\'' +
-                ", bill_discount_rate='" + bill_discount_rate + '\'' +
-                ", bill_discount_amount='" + bill_discount_amount + '\'' +
-                ", bill_discount_reason='" + bill_discount_reason + '\'' +
-                ", bill_tip='" + bill_tip + '\'' +
-                ", bill_created_on='" + bill_created_on + '\'' +
-                ", bill_created_by='" + bill_created_by + '\'' +
-                '}';
-    }
+
 }

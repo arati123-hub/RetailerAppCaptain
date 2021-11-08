@@ -183,25 +183,4 @@ public class ProductCategoryDetails {
         this.product_cgst = product_cgst;
     }
 
-    @Override
-    public String toString() {
-        return "ProductCategoryDetails{" +
-                "product_category_id='" + product_category_id + '\'' +
-                ", category_id='" + category_id + '\'' +
-                ", product_id='" + product_id + '\'' +
-                ", product_category_created_on='" + product_category_created_on + '\'' +
-                ", product_category_created_by='" + product_category_created_by + '\'' +
-                ", product_category_modified_on='" + product_category_modified_on + '\'' +
-                ", product_category_modified_by='" + product_category_modified_by + '\'' +
-                ", product_category_is_deleted='" + product_category_is_deleted + '\'' +
-                ", language_text='" + language_text + '\'' +
-                ", product_code='" + product_code + '\'' +
-                ", product_sequence='" + product_sequence + '\'' +
-                ", product_sku='" + product_sku + '\'' +
-                ", product_bar_code='" + product_bar_code + '\'' +
-                ", product_tax_slab='" + product_tax_slab + '\'' +
-                ", product_sgst='" + product_sgst + '\'' +
-                ", product_cgst='" + product_cgst + '\'' +
-                '}';
-    }
 }

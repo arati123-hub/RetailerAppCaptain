@@ -128,20 +128,4 @@ public class BillDetail {
         this.bill_detail_created_by = bill_detail_created_by;
     }
 
-    @Override
-    public String toString() {
-        return "BillProductDetails{" +
-                "bill_detail_id='" + bill_detail_id + '\'' +
-                ", bill_id='" + bill_id + '\'' +
-                ", bill_detail_product_quantity='" + bill_detail_product_quantity + '\'' +
-                ", bill_detail_product_price='" + bill_detail_product_price + '\'' +
-                ", bill_detail_product_id='" + bill_detail_product_id + '\'' +
-                ", bill_detail_product_discount='" + bill_detail_product_discount + '\'' +
-                ", bill_detail_product_sgst='" + bill_detail_product_sgst + '\'' +
-                ", bill_detail_product_cgst='" + bill_detail_product_cgst + '\'' +
-                ", bill_detail_product_special_note='" + bill_detail_product_special_note + '\'' +
-                ", bill_detail_created_on='" + bill_detail_created_on + '\'' +
-                ", bill_detail_created_by='" + bill_detail_created_by + '\'' +
-                '}';
-    }
 }

@@ -62,14 +62,5 @@ public class KOTItems {
         this.type = type;
     }
 
-    @Override
-    public String toString() {
-        return "KOTItems{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", price='" + price + '\'' +
-                ", quantity='" + quantity + '\'' +
-                ", type='" + type + '\'' +
-                '}';
-    }
+
 }

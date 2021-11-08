@@ -132,18 +132,4 @@ public class ProductDetails {
         this.product_bar_code = product_bar_code;
     }
 
-
-    @Override
-    public String toString() {
-        return "ProductDetails{" +
-                "product_id='" + product_id + '\'' +
-                ", product_name='" + product_name + '\'' +
-                ", product_photo='" + product_photo + '\'' +
-                ", product_description='" + product_description + '\'' +
-                ", product_price='" + product_price + '\'' +
-                ", product_code='" + product_code + '\'' +
-                ", product_sequence='" + product_sequence + '\'' +
-                ", product_bar_code='" + product_bar_code + '\'' +
-                '}';
-    }
 }

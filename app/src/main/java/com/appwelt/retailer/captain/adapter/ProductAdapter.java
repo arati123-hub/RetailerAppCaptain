@@ -17,7 +17,6 @@ import com.appwelt.retailer.captain.R;
 import com.appwelt.retailer.captain.model.ProductDetails;
 import com.appwelt.retailer.captain.utils.FontStyle;
 import com.appwelt.retailer.captain.utils.SharedPref;
-import com.appwelt.retailer.captain.utils.sqlitedatabase.DatabaseHelper;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -58,9 +57,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         FontStyle.FontStyle(context);
 
-        //String DATABASE_NAME = SharedPref.getString(context,"database_name");
-        //DatabaseHelper databaseHelper = new DatabaseHelper(context,DATABASE_NAME);
-
         String product_id = editModelArrayList.get(position).getProduct_id();
         holder.itemName.setTypeface(FontStyle.getFontRegular());
         holder.itemPrice.setTypeface(FontStyle.getFontRegular());
@@ -69,7 +65,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
         holder.itemPrice1.setTypeface(FontStyle.getFontRegular());
         holder.itemNo1.setTypeface(FontStyle.getFontRegular());
 
-        //String productSr = databaseHelper.selectByID("tbl_product","product_id",product_id,"product_sequence");
         String productSr = product_id;
         holder.itemNo.setText("PRO0"+productSr);
         String productName = editModelArrayList.get(position).getProduct_name();
@@ -81,9 +76,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
         holder.itemNo1.setText(editModelArrayList.get(position).getProduct_code());
         holder.itemName1.setText(editModelArrayList.get(position).getProduct_name());
         holder.itemPrice1.setText(editModelArrayList.get(position).getProduct_price());
-        //holder.itemName.setText(databaseHelper.selectByID("tbl_language_text","language_reference_id","PN_"+product_id,"language_text"));
-        //holder.itemPrice.setText(databaseHelper.selectByID("tbl_product","product_id",product_id,"product_price"));
-        //databaseHelper.selectByID("tbl_product","product_id",product_id,"product_photo")
 
         String productPhoto =editModelArrayList.get(position).getProduct_photo();
         File imgFile = new File(Environment.getExternalStorageDirectory()+"/RetailerApp/images/" + productPhoto);

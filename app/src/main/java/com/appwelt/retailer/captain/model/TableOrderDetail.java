@@ -106,17 +106,5 @@ public class TableOrderDetail {
         this.extra_items = extra_items;
     }
 
-    @Override
-    public String toString() {
-        return "TableOrderDetail{" +
-                "table_id='" + table_id + '\'' +
-                ", section_id='" + section_id + '\'' +
-                ", order_id='" + order_id + '\'' +
-                ", bill_id='" + bill_id + '\'' +
-                ", bill_token='" + bill_token + '\'' +
-                ", order_type='" + order_type + '\'' +
-                ", order_status='" + order_status + '\'' +
-                ", order_detail=" + order_detail +
-                '}';
-    }
+
 }

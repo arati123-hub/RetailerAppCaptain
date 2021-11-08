@@ -133,14 +133,6 @@ public class TableListDetails {
             this.bill_id = bill_id;
         }
 
-        @Override
-        public String toString() {
-            return "FoodData{" +
-                    "status='" + status + '\'' +
-                    ", order_id='" + order_id + '\'' +
-                    ", bill_id='" + bill_id + '\'' +
-                    '}';
-        }
     }
 
     public static class BarData {
@@ -179,27 +171,7 @@ public class TableListDetails {
             this.bill_id = bill_id;
         }
 
-        @Override
-        public String toString() {
-            return "BarData{" +
-                    "status='" + status + '\'' +
-                    ", order_id='" + order_id + '\'' +
-                    ", bill_id='" + bill_id + '\'' +
-                    '}';
-        }
     }
 
-    @Override
-    public String toString() {
-        return "TableListDetails{" +
-                "collector_id='" + collector_id + '\'' +
-                ", collector_name='" + collector_name + '\'' +
-                ", collector_image='" + collector_image + '\'' +
-                ", collector_type='" + collector_type + '\'' +
-                ", collector_status='" + collector_status + '\'' +
-                ", collector_split_series_no='" + collector_split_series_no + '\'' +
-                ", food_data=" + food_data +
-                ", bar_data=" + bar_data +
-                '}';
-    }
+
 }

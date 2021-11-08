@@ -226,29 +226,4 @@ public class OrderDetails {
         this.order_details_is_deleted = order_details_is_deleted;
     }
 
-    @Override
-    public String toString() {
-        return "OrderDetails{" +
-                "order_details_id='" + order_details_id + '\'' +
-                ", order_id='" + order_id + '\'' +
-                ", product_id='" + product_id + '\'' +
-                ", order_details_order_qty='" + order_details_order_qty + '\'' +
-                ", order_deatils_unit_price='" + order_deatils_unit_price + '\'' +
-                ", order_details_product_price='" + order_details_product_price + '\'' +
-                ", order_deatils_discount_amount='" + order_deatils_discount_amount + '\'' +
-                ", order_details_tax='" + order_details_tax + '\'' +
-                ", order_details_total_price='" + order_details_total_price + '\'' +
-                ", order_details_tax_no='" + order_details_tax_no + '\'' +
-                ", order_details_tax_amount='" + order_details_tax_amount + '\'' +
-                ", order_details_tax_type='" + order_details_tax_type + '\'' +
-                ", order_details_special_note='" + order_details_special_note + '\'' +
-                ", order_details_payment_stock_id='" + order_details_payment_stock_id + '\'' +
-                ", order_details_status='" + order_details_status + '\'' +
-                ", order_details_created_on='" + order_details_created_on + '\'' +
-                ", order_details_created_by='" + order_details_created_by + '\'' +
-                ", order_details_modified_on='" + order_details_modified_on + '\'' +
-                ", order_details_modified_by='" + order_details_modified_by + '\'' +
-                ", order_details_is_deleted='" + order_details_is_deleted + '\'' +
-                '}';
-    }
 }

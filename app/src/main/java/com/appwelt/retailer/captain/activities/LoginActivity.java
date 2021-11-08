@@ -6,7 +6,6 @@ import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
-import androidx.core.widget.ImageViewCompat;
 
 import android.Manifest;
 import android.app.Activity;
@@ -23,7 +22,6 @@ import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,12 +34,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.appwelt.retailer.captain.BuildConfig;
 import com.appwelt.retailer.captain.R;
-import com.appwelt.retailer.captain.model.OrganizationDetails;
-import com.appwelt.retailer.captain.model.ProfileInfo;
 import com.appwelt.retailer.captain.services.CaptainOrderService;
 import com.appwelt.retailer.captain.services.MessageDeframer;
 import com.appwelt.retailer.captain.services.OnMessageListener;
@@ -50,7 +45,6 @@ import com.appwelt.retailer.captain.utils.FileTools;
 import com.appwelt.retailer.captain.utils.FontStyle;
 import com.appwelt.retailer.captain.utils.MyKeyboard;
 import com.appwelt.retailer.captain.utils.SharedPref;
-import com.appwelt.retailer.captain.utils.sqlitedatabase.DatabaseHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -78,7 +72,6 @@ public class LoginActivity extends AppCompatActivity implements OnMessageListene
     AppCompatImageView server_connectivity;
     ProgressDialog progressDialog;
 
-    DatabaseHelper dataBaseHelper;
 
     String server_ip,server_port;
 
@@ -371,16 +364,6 @@ public class LoginActivity extends AppCompatActivity implements OnMessageListene
     }
 
     private void inti() {
-//        String DATABASE_NAME = SharedPref.getString(LoginActivity.this,"database_name");
-//        if (DATABASE_NAME != null && DATABASE_NAME.length()!=0){
-//            dataBaseHelper=new DatabaseHelper(this,DATABASE_NAME);
-//        }
-//
-//        ArrayList<OrganizationDetails> organizationDetails = dataBaseHelper.getOrganizationdetails();
-//        if (organizationDetails != null){
-//            SharedPref.putString(LoginActivity.this,"organisation_id",organizationDetails.get(0).getOrganisation_id());
-//        }
-
 
         pinTitle = findViewById(R.id.pin_title);
         server_connectivity = findViewById(R.id.server_connectivity);
@@ -473,28 +456,6 @@ public class LoginActivity extends AppCompatActivity implements OnMessageListene
         CaptainOrderService.getInstance().ServiceInitiate();
 
         CaptainOrderService.getInstance().sendCommand(Constants.cmdLogin + SharedPref.getString(LoginActivity.this, "device_id") + "#" + edt_pin.getText().toString());
-
-//        File folderStorage = new File(Environment.getExternalStorageDirectory().getPath() + "/" + Constants.FOLDER_NAME );
-//        if (folderStorage.exists()){
-//            File databaseStorage = new File(Environment.getExternalStorageDirectory().getPath() + "/" + Constants.FOLDER_NAME + "/" +Constants.DATABASE_NAME);
-//            if (databaseStorage.exists()){
-//                ProfileInfo profileInfo = new ProfileInfo();
-//                profileInfo = dataBaseHelper.checkLogin(edt_pin.getText().toString());
-//                if (profileInfo != null){
-//                    SharedPref.putString(LoginActivity.this,"user_id",profileInfo.getUser_id());
-//                    SharedPref.putString(LoginActivity.this,"isLogin","true");
-//                    SharedPref.putString(LoginActivity.this,"user_status",profileInfo.getUser_status());
-//                    startActivity(new Intent(getApplicationContext(), TableSelectionActivity.class));
-//                    finish();
-//                }else{
-//                    DialogBox(getResources().getString(R.string.invalid_credentials));
-//                }
-//            }else{
-//                DialogBox(getResources().getString(R.string.database_not_found));
-//            }
-//        }else{
-//            DialogBox(getResources().getString(R.string.database_not_found));
-//        }
 
     }
 
