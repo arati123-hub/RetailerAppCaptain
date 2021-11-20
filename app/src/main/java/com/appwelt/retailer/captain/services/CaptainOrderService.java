@@ -457,9 +457,23 @@ public class CaptainOrderService extends Service
                 }
 
             } catch (final IOException e) {
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        //ICSBMessageDeframer.MessageAddQueue(MsgHeader, MsgData, iPayLoad);
+                        MessageDeframer.MessageDataDeframe("#NOTAVAILABLE#",0);
+                    }
+                });
                 //Utils.writeCommandLog(getBaseContext(), "WiFi", "Unexpected I/O error." + e.toString(), "");
                 Log.e(TAG, "Unexpected I/O error.", e);
             } catch (final Exception e) {
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        //ICSBMessageDeframer.MessageAddQueue(MsgHeader, MsgData, iPayLoad);
+                        MessageDeframer.MessageDataDeframe("#NOTAVAILABLE#",0);
+                    }
+                });
                 //Utils.writeCommandLog(getBaseContext(), "WiFi", "Exception occurred." + e.toString(), "");
                 Log.e(TAG, "Exception occurred.", e);
             } finally {
@@ -554,60 +568,23 @@ public class CaptainOrderService extends Service
                     if (iavailable > 0) {
                         readMsgData = new byte[iavailable];
                         int count = inputWifi.read(readMsgData, 0, iavailable);
+
                         String strData = "";
 
-                        for(int i=0; i<count; i++)
+                        for(int i=0; i<count; i++) {
                             strData = strData + (char) readMsgData[i];
-
-//                        if (bZipFile.equals("")) {
-//                            FullMsgData = FullMsgData + strData;
-//
-//                            if (FullMsgData.startsWith(Constants.cmdListImages)) {
-//                                FullMsgData = FullMsgData.replace(Constants.cmdListImages, "");
-//                                String Device_id = FullMsgData.substring(0, FullMsgData.indexOf("#"));
-//                                FullMsgData = FullMsgData.replace(Device_id + "#", "");
-//                                FullMsgData = FullMsgData.replace("~END~", "");
-//
-//                                bZipFile = FullMsgData;
-//
-//                                File zipFolder = new File(Environment.getExternalStorageDirectory().getPath() + "/" + Constants.FOLDER_NAME);
-//
-//                                zipfile = new File(zipFolder, bZipFile);
-//                                if (zipfile.exists()) {
-//                                    zipfile.delete();
-//                                }
-//                                try {
-//                                    Log.e("File created ", "File created.");
-//                                    zipfile.createNewFile();
-//                                } catch (IOException e) {
-//                                    // TODO Auto-generated catch block
-//                                    e.printStackTrace();
-//                                }
-//                                zipfile = null;
-//                            }
-//                        }
-//                        else
-//                        {
-//                            try {
-//                                FileOutputStream out = new FileOutputStream(zipfile, true);
-//                                out.write(readMsgData, 0, readMsgData.length);
-//                                out.close();
-//                            } catch (FileNotFoundException e) {
-//                                e.printStackTrace();
-//                            } catch (IOException e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
-//
-//                        if (bZipFile.equals("")) {
+                        }
+                        FullMsgData = FullMsgData + strData;
+//                            responseData = strData;
                             if (strData.contains("~END~")) {
                                 responseData = FullMsgData;
                                 FullMsgData = "";
                             }
 
-                            FileTools.writeCommandLog(context, "WiFi", "Receive:", strData, "", false);
 
                             if (!responseData.equals("")) {
+                                FileTools.writeCommandLog(context, "WiFi", "Receive:", responseData, "", false);
+
                                 /*
                                  * Executing the command defragmer on different thead than the Service
                                  */
@@ -621,21 +598,23 @@ public class CaptainOrderService extends Service
                                     }
                                 });
                             }
-                        //} Zip
+                        //} //Zip
 
-                        strData = "";
+//                        strData = "";
 
 
                     }
                 }
             }
             catch (final IOException e) {
+                e.printStackTrace();
                 Log.e(TAG, "Unexpected I/O error.", e);
              } catch (final Exception e) {
+                e.printStackTrace();
                 Log.e(TAG, "Exception occurred.", e);
             }
             finally {
-                Log.d(TAG, "Exception occurred.");
+                    Log.d(TAG, "Exception occurred.");
             }
 
 

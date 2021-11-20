@@ -25,6 +25,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
+import android.widget.Toast;
+
 import com.appwelt.retailer.captain.R;
 import com.appwelt.retailer.captain.adapter.CategoryAdapter;
 import com.appwelt.retailer.captain.adapter.ExtraItemListAdapter;
@@ -98,6 +100,7 @@ public class RestaurantOrderActivity extends AppCompatActivity  implements OnMes
     TableOrderDetail tableOrderDetail;
 
     ArrayList<OrderDetail> nonKOTItems;
+    List<ProductDetails> allProducts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -428,7 +431,9 @@ public class RestaurantOrderActivity extends AppCompatActivity  implements OnMes
         if (!section_name.equals("") && section_name != null){
 
             String table_name = SharedPref.getString(RestaurantOrderActivity.this,"table_name");
-
+            if (SharedPref.getString(getApplicationContext(),"table_split_status").equals("1")){
+                table_name = table_name + "-" +SharedPref.getString(getApplicationContext(),"table_series_name");
+            }
             orderTitle.setText(section_name + " "+ table_name);
         }
 
@@ -480,7 +485,7 @@ public class RestaurantOrderActivity extends AppCompatActivity  implements OnMes
                             String json = new Gson().toJson(nonKOTItems);
 
                             CaptainOrderService.getInstance().ServiceInitiate();
-                            CaptainOrderService.getInstance().sendCommand(Constants.cmdPrintKKOT + SharedPref.getString(RestaurantOrderActivity.this, "device_id") + "#{'section_id':'"+section_id+"','table_id':'"+selectedTable+"','user_id':'"+SharedPref.getString(RestaurantOrderActivity.this,"user_id")+"','order_type':'"+order_type+"','data':'"+json+"','extra_item':'"+extraItemJson+"'}");
+                            CaptainOrderService.getInstance().sendCommand(Constants.cmdPrintKKOT + SharedPref.getString(RestaurantOrderActivity.this, "device_id") + "#{'section_id':'"+section_id+"','table_id':'"+selectedTable+"','table_series_no':'"+SharedPref.getString(RestaurantOrderActivity.this,"table_series_no")+"','user_id':'"+SharedPref.getString(RestaurantOrderActivity.this,"user_id")+"','order_type':'"+order_type+"','data':'"+json+"','extra_item':'"+extraItemJson+"'}");
                         }else{
                             DialogBox(getResources().getString(R.string.please_add_item_to_print_kot),null);
                         }
@@ -564,6 +569,7 @@ public class RestaurantOrderActivity extends AppCompatActivity  implements OnMes
     }
 
     private void getItemsFromJSON() {
+        allProducts = new ArrayList<>();
         File checkFile = new File(Environment.getExternalStorageDirectory().getPath() + "/" + Constants.FOLDER_NAME);
         if (checkFile.exists()) {
            File ItemList = new File(checkFile.getAbsolutePath() + "/ItemList");
@@ -577,14 +583,15 @@ public class RestaurantOrderActivity extends AppCompatActivity  implements OnMes
                         JSONArray food_arr = null;
 
 
-                        if (obj.has("food_items") )
-                            food_arr = new JSONArray(obj.getString("food_items"));
-                        if (obj.has("bar_items") )
-                            bar_arr = new JSONArray(obj.getString("bar_items"));
-                        if (obj.has("extra_items") )
-                            extra_arr = new JSONArray(obj.getString("extra_items"));
+                        if (obj.has("food_items") ){
+                            food_arr = new JSONArray(obj.getString("food_items"));}
+                        if (obj.has("bar_items") ){
+                            bar_arr = new JSONArray(obj.getString("bar_items"));}
+                        if (obj.has("extra_items") ){
+                            extra_arr = new JSONArray(obj.getString("extra_items"));}
 
                         ArrayList<CategoryDetails> foodCategoryDetails = new ArrayList<>();
+                        List<ProductDetails> foodProduct = new ArrayList<>();
                         if (food_arr != null) {
                             for (int i = 0; i < food_arr.length(); i++) {
                                 JSONObject cat = new JSONObject(food_arr.get(i).toString());
@@ -614,6 +621,7 @@ public class RestaurantOrderActivity extends AppCompatActivity  implements OnMes
                                             proObj.setProduct_bar_code(proDetail.getString("product_bar_code"));
                                         }
                                         productDetails.add(proObj);
+                                        foodProduct.add(proObj);
                                     }
                                     sub_obj.setProductDetails(productDetails);
 
@@ -623,6 +631,7 @@ public class RestaurantOrderActivity extends AppCompatActivity  implements OnMes
                         }
 
                         ArrayList<CategoryDetails> barCategoryDetails = new ArrayList<>();
+                        List<ProductDetails> barProduct = new ArrayList<>();
                         if (bar_arr!=null) {
                             for (int i = 0; i < bar_arr.length(); i++) {
                                 JSONObject cat = new JSONObject(bar_arr.get(i).toString());
@@ -653,6 +662,7 @@ public class RestaurantOrderActivity extends AppCompatActivity  implements OnMes
                                             proObj.setProduct_bar_code(proDetail.getString("product_bar_code"));
                                         }
                                         productDetails.add(proObj);
+                                        barProduct.add(proObj);
                                     }
                                     sub_obj.setProductDetails(productDetails);
 
@@ -677,8 +687,10 @@ public class RestaurantOrderActivity extends AppCompatActivity  implements OnMes
 
                         if (SharedPref.getString(RestaurantOrderActivity.this,"order_type").equals("FOOD")){
                             categoryDetails = foodCategoryDetails;
+                            allProducts = foodProduct;
                         }else{
                             categoryDetails = barCategoryDetails;
+                            allProducts = barProduct;
                         }
 
                         if (categoryDetails != null){
@@ -732,11 +744,11 @@ public class RestaurantOrderActivity extends AppCompatActivity  implements OnMes
     void filter(String text){
         boolean flag = true;
         ArrayList<ProductDetails> temp = new ArrayList();
-        for(ProductDetails d: productCategoryDetailsAll){
+        for(ProductDetails d: allProducts){
             if (d.getProduct_bar_code()==null){ d.setProduct_bar_code("");}
-            if(d.getLanguage_text().toLowerCase().contains(text.toLowerCase())){
+            if(d.getProduct_name().toLowerCase().contains(text.toLowerCase())){
                 temp.add(d);
-            }else if (("PRO0"+d.getProduct_sequence()).toLowerCase().contains(text.toLowerCase())){
+            }else if ((d.getProduct_code()).toLowerCase().contains(text.toLowerCase())){
                 temp.add(d);
             }else if ((d.getProduct_bar_code()).toLowerCase().equals(text.toLowerCase())){
                 temp.add(d);
@@ -916,7 +928,7 @@ public class RestaurantOrderActivity extends AppCompatActivity  implements OnMes
             if (foodBillId.length()!=0 || barBillId.length()!=0){
                 askForReason();
             }else{
-                CaptainOrderService.getInstance().sendCommand(Constants.cmdClearOrderTable + SharedPref.getString(RestaurantOrderActivity.this, "device_id") + "#{'section_id':'" +selectedSection+"','user_id':'"+SharedPref.getString(RestaurantOrderActivity.this,"user_id")+"','table_id':'"+ table_id+"'}");
+                CaptainOrderService.getInstance().sendCommand(Constants.cmdClearOrderTable + SharedPref.getString(RestaurantOrderActivity.this, "device_id") + "#{'section_id':'" +section_id+"','user_id':'"+SharedPref.getString(RestaurantOrderActivity.this,"user_id")+"','table_id':'"+ table_id+"'}");
 
             }
 
@@ -959,7 +971,7 @@ public class RestaurantOrderActivity extends AppCompatActivity  implements OnMes
 
                     String user_id = SharedPref.getString(RestaurantOrderActivity.this,"user_id");
 
-                    CaptainOrderService.getInstance().sendCommand(Constants.cmdClearKOTTable + SharedPref.getString(RestaurantOrderActivity.this, "device_id") + "#{'section_id':'" +selectedSection+"','user_id':'"+SharedPref.getString(RestaurantOrderActivity.this,"user_id")+"','table_id':'"+ table_id+"','reason':'" + edt_dialog_msg.getText().toString()+"'}");
+                    CaptainOrderService.getInstance().sendCommand(Constants.cmdClearKOTTable + SharedPref.getString(RestaurantOrderActivity.this, "device_id") + "#{'section_id':'" +section_id+"','user_id':'"+SharedPref.getString(RestaurantOrderActivity.this,"user_id")+"','table_id':'"+ table_id+"','table_series_no':'"+SharedPref.getString(RestaurantOrderActivity.this,"table_series_no")+"','reason':'" + edt_dialog_msg.getText().toString()+"'}");
                     dialog.dismiss();
 
                 }

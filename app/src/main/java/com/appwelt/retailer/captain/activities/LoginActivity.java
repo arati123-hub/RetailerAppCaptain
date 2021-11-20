@@ -22,6 +22,7 @@ import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,6 +35,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.appwelt.retailer.captain.BuildConfig;
 import com.appwelt.retailer.captain.R;
@@ -234,6 +236,9 @@ public class LoginActivity extends AppCompatActivity implements OnMessageListene
             {
                 DialogBox(getResources().getString(R.string.unable_get_iamges));
             }
+        }else if (strCommand.equals(Constants.cmdNoAvailable))
+        {
+            DialogBox(getResources().getString(R.string.master_app_service_not_available));
         }
     }
 
@@ -291,6 +296,18 @@ public class LoginActivity extends AppCompatActivity implements OnMessageListene
         edt_ip3.setText("0");
         edt_ip4.setText("0");
         edt_port.setText("1600");
+        if (server_ip != null || server_port != null){
+            if (server_ip.length() != 0 || server_port.length() != 0){
+
+                String[] parts = server_ip.split("\\.");
+                String part1 = parts[0]; // 004
+                String part2 = parts[1];
+                String part3 = parts[2];
+                String part4 = parts[3];
+                edt_ip3.setText(part3);
+                edt_ip4.setText(part4);
+            }
+        }
 
         btn_dialog_confirm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -478,6 +495,13 @@ public class LoginActivity extends AppCompatActivity implements OnMessageListene
         btn_dialog_cofirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        edt_dialog_title.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 dialog.dismiss();
             }
         });

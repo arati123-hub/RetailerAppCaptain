@@ -430,7 +430,7 @@ public class CheckKOTActivity extends AppCompatActivity  implements OnMessageLis
             @Override
             public void onClick(View view) {
                 CaptainOrderService.getInstance().ServiceInitiate();
-                CaptainOrderService.getInstance().sendCommand(Constants.cmdPrintCheckKOT + SharedPref.getString(CheckKOTActivity.this, "device_id") + "#{'table_id':'"+selectedTable+"','section_id':'"+selectedSection+"','user_id':'"+SharedPref.getString(CheckKOTActivity.this,"user_id")+"'}");
+                CaptainOrderService.getInstance().sendCommand(Constants.cmdPrintCheckKOT + SharedPref.getString(CheckKOTActivity.this, "device_id") + "#{'table_id':'"+selectedTable+"','table_series_no':'"+SharedPref.getString(CheckKOTActivity.this,"table_series_no")+"','section_id':'"+selectedSection+"','user_id':'"+SharedPref.getString(CheckKOTActivity.this,"user_id")+"'}");
             }
         });
 
@@ -449,14 +449,18 @@ public class CheckKOTActivity extends AppCompatActivity  implements OnMessageLis
                 String discountReason = "";
                 if (!discountReasonEdt.getText().toString().isEmpty()){ discountReason = discountReasonEdt.getText().toString(); }
                 CaptainOrderService.getInstance().ServiceInitiate();
-                CaptainOrderService.getInstance().sendCommand(Constants.cmdPrintBill + SharedPref.getString(CheckKOTActivity.this, "device_id") + "#{'table_id':'"+selectedTable+"','section_id':'"+selectedSection+"','c_name':'"+customerName+"','c_no':'"+customerNo+"','discount_per':'"+discountPercent+"','discount_amount':'"+discountAmount+"','discount_reason':'"+discountReason+"','sgst':'"+sgstAmount+"','cgst':'"+cgstAmount+"','bill_amount':'"+billAmount+"','user_id':'"+SharedPref.getString(CheckKOTActivity.this,"user_id")+"'}");
+                CaptainOrderService.getInstance().sendCommand(Constants.cmdPrintBill + SharedPref.getString(CheckKOTActivity.this, "device_id") + "#{'table_id':'"+selectedTable+"','table_series_no':'"+SharedPref.getString(CheckKOTActivity.this,"table_series_no")+"','section_id':'"+selectedSection+"','c_name':'"+customerName+"','c_no':'"+customerNo+"','discount_per':'"+discountPercent+"','discount_amount':'"+discountAmount+"','discount_reason':'"+discountReason+"','sgst':'"+sgstAmount+"','cgst':'"+cgstAmount+"','bill_amount':'"+billAmount+"','user_id':'"+SharedPref.getString(CheckKOTActivity.this,"user_id")+"'}");
 
             }
         });
 
 
         String section = SharedPref.getString(getApplicationContext(),"section_name");
-        orderTitle.setText(section+" "+SharedPref.getString(CheckKOTActivity.this,"table_name"));
+        String table_name = SharedPref.getString(getApplicationContext(),"table_name");
+//        if (SharedPref.getString(getApplicationContext(),"table_split_status").equals("1")){
+//            table_name = table_name + "-" +SharedPref.getString(getApplicationContext(),"table_series_name");
+//        }
+        orderTitle.setText(section+" "+table_name);
     }
 
     private void calculateTotalFigures() {

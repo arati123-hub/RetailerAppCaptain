@@ -44,7 +44,11 @@ public class Constants extends Application {
     public static String cmdTableKOTData = "#TABLEKOTDATA#";
     public static String cmdPrintBill = "#PRINTBILL#";
     public static String cmdPrintCheckKOT = "#PRINTCHECKKOT#";
+    public static String cmdTableSplit = "#TABLESPLIT#";
+    public static String cmdTableUnsplit = "#TABLEUNSPLIT#";
 
     public static String cmdListProducts = "#LISTPRODUCTS#";
     public static String cmdListImages = "#LISTIMAGES#";
+
+    public static String cmdNoAvailable = "#NOTAVAILABLE#";
 }

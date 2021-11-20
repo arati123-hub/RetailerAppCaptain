@@ -80,7 +80,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
             }
         }
 
-        String srNo = responseData.get(position).getCategory_id();
+        String srNo = responseData.get(position).getSequence_nr();
         String catType = responseData.get(position).getCategory_type();
          if (catType.equals("1")){
             holder.itemId.setText("FCAT0"+srNo);

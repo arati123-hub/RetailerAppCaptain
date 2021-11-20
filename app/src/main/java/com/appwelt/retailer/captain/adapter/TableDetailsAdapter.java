@@ -85,6 +85,14 @@ public class TableDetailsAdapter extends RecyclerView.Adapter<TableDetailsAdapte
         }
 
         String tableName = tableListDetails.get(position).getCollector_name();
+        String collector_status = tableListDetails.get(position).getCollector_status();
+        String collector_series_no = tableListDetails.get(position).getCollector_split_series_no();
+
+        if (collector_status.equals("1")){
+            String[] series_name = {"","A","B","C","D"};
+            tableName = tableName+"-"+series_name[Integer.valueOf(collector_series_no)];
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (table_food_status.length()!=0 && table_bar_status.length()!=0){
                 if (table_food_status.equals("1") && table_bar_status.equals("1")) {
@@ -150,7 +158,7 @@ public class TableDetailsAdapter extends RecyclerView.Adapter<TableDetailsAdapte
                         Log.e("Error", e.getStackTrace().toString());
                     }
                 }else{
-                    holder.tableNo.setText(tableListDetails.get(position).getCollector_id());
+                    holder.tableNo.setText(tableName);
                     holder.tableNo.setTextColor(context.getResources().getColor(R.color.black));
                     try {
                         holder.mainDiv.setBackgroundColor(context.getResources().getColor(R.color.tablenormal));
@@ -163,12 +171,12 @@ public class TableDetailsAdapter extends RecyclerView.Adapter<TableDetailsAdapte
             }
         }
 
-        if (tableListDetails.get(position).getCollector_id().equals("6") || tableListDetails.get(position).getCollector_id().equals("13")){
+        if (tableListDetails.get(position).getCollector_name().equals("6") || tableListDetails.get(position).getCollector_name().equals("13")){
             holder.tableNo.setVisibility(View.GONE);
             holder.mainDiv.setBackgroundColor(context.getResources().getColor(R.color.gray));
         }
 
-        if (!tableListDetails.get(position).getCollector_id().equals("6") && !tableListDetails.get(position).getCollector_id().equals("13")){
+        if (!tableListDetails.get(position).getCollector_name().equals("6") && !tableListDetails.get(position).getCollector_name().equals("13")){
             holder.mainDiv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

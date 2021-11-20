@@ -6,6 +6,7 @@ import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -36,20 +37,21 @@ import org.json.JSONObject;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 
-public class TableSelectionActivity extends AppCompatActivity  implements OnMessageListener  {
+public class TableSelectionActivity extends AppCompatActivity  implements OnMessageListener,SwipeRefreshLayout.OnRefreshListener  {
 
     private static final String TAG = "TABLE_SELECTION";
 
     RecyclerView recyclerView;
-    String selectedTableType="",selectedTable = "", selectedSection = "";
+    String selectedTableType="",selectedTable = "", selectedTableName = "", selectedSection = "";
 
     String foodStatus,barStatus,foodOrderId,barOrderId,foodBillId,barBillId;
 
     ArrayList<TableListDetails> Halltables  = new ArrayList<>();
     private TableDetailsAdapter adapter;
 
-    AppCompatTextView bill_title,change_table_title,bar_order_title,clean_table_title,btn_merge,btn_back;
+    AppCompatTextView bill_title,change_table_title,bar_order_title,clean_table_title,btnSplit,btnJoin,btn_merge,btn_back;
     FileOutputStream stream;
+    SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -182,6 +184,44 @@ public class TableSelectionActivity extends AppCompatActivity  implements OnMess
 
                 DialogBox(response);
             }
+        }else if (strCommand.equals(Constants.cmdTableSplit)) {
+            Log.i(TAG, "onMessageReceived: "+strData);
+            if (strData.startsWith("SPLIT")) {
+                strData = strData.replace("SPLIT#", "");
+                getTableDetails(selectedSection);
+            }
+            else if (strData.startsWith("INVALID"))
+            {
+                strData = strData.replace("INVALID#", "");
+                String response = "Failed with Server Call.";
+                try {
+                    JSONObject obj = new JSONObject(strData);
+                    response = obj.getString("response");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                DialogBox(response);
+            }
+        }else if (strCommand.equals(Constants.cmdTableUnsplit)) {
+            Log.i(TAG, "onMessageReceived: "+strData);
+            if (strData.startsWith("UNSPLIT")) {
+                strData = strData.replace("UNSPLIT#", "");
+                getTableDetails(selectedSection);
+            }
+            else if (strData.startsWith("INVALID"))
+            {
+                strData = strData.replace("INVALID#", "");
+                String response = "Failed with Server Call.";
+                try {
+                    JSONObject obj = new JSONObject(strData);
+                    response = obj.getString("response");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                DialogBox(response);
+            }
         }
     }
 
@@ -253,6 +293,7 @@ public class TableSelectionActivity extends AppCompatActivity  implements OnMess
                         SharedPref.putString(TableSelectionActivity.this,"table",item.getCollector_id());
                         selectedTableType = item.getCollector_type();
                         selectedTable = item.getCollector_id();
+                        selectedTableName = item.getCollector_name();
                         foodStatus = ""; barStatus = "";
                         if (item.getFood_data()!= null) {
                             foodStatus = item.getFood_data().getStatus();
@@ -275,12 +316,16 @@ public class TableSelectionActivity extends AppCompatActivity  implements OnMess
                         if (barBillId == null){ barBillId = ""; }
 
                         String table_name = item.getCollector_name();
+                        String[] series_name = {"","A","B","C","D"};
                         if (item.getCollector_status().equals("1")){
-                            String[] series_name = {"","A","B","C","D"};
+
                             table_name = table_name + "-" + series_name[Integer.valueOf(item.getCollector_split_series_no())];
                         }
 
                         SharedPref.putString(TableSelectionActivity.this,"table_name",table_name);
+                        SharedPref.putString(TableSelectionActivity.this,"table_series_no",item.getCollector_split_series_no());
+                        SharedPref.putString(TableSelectionActivity.this,"table_series_name",series_name[Integer.valueOf(item.getCollector_split_series_no())]);
+                        SharedPref.putString(TableSelectionActivity.this,"table_split_status",item.getCollector_status());
                         SharedPref.putString(TableSelectionActivity.this,"food_table_status",foodStatus);
                         SharedPref.putString(TableSelectionActivity.this,"bar_table_status",barStatus);
                         SharedPref.putString(TableSelectionActivity.this,"food_order_id",foodOrderId);
@@ -313,19 +358,44 @@ public class TableSelectionActivity extends AppCompatActivity  implements OnMess
         bar_order_title = findViewById(R.id.bar_order_title);
         clean_table_title = findViewById(R.id.clean_table_title);
         btn_merge = findViewById(R.id.merge_title);
+        btnSplit = findViewById(R.id.split_title);
+        btnJoin = findViewById(R.id.join_title);
         btn_back = findViewById(R.id.back_title);
 
         //by default section selection
         selectedSection = SharedPref.getString(TableSelectionActivity.this, "section"); //dataBaseHelper.getSectiondetails().get(0).getSection_id();
 
-        getTableDetails(selectedSection);
+
 
         bill_title.setTypeface(FontStyle.getFontRegular());
         change_table_title.setTypeface(FontStyle.getFontRegular());
         bar_order_title.setTypeface(FontStyle.getFontRegular());
         clean_table_title.setTypeface(FontStyle.getFontRegular());
         btn_merge.setTypeface(FontStyle.getFontRegular());
+        btnSplit.setTypeface(FontStyle.getFontRegular());
+        btnJoin.setTypeface(FontStyle.getFontRegular());
         btn_back.setTypeface(FontStyle.getFontRegular());
+
+        //SwipeRefreshLayout
+        mSwipeRefreshLayout = findViewById(R.id.swipe_container);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.balajimaroon,
+                android.R.color.holo_green_dark,
+                android.R.color.holo_orange_dark,
+                android.R.color.holo_blue_dark);
+
+        mSwipeRefreshLayout.post(new Runnable() {
+
+            @Override
+            public void run() {
+
+                mSwipeRefreshLayout.setRefreshing(true);
+
+                // Fetching data from server
+                getTableDetails(selectedSection);
+            }
+        });
+        getTableDetails(selectedSection);
     }
 
     private void getTableDetails(String selectedSection) {
@@ -335,6 +405,7 @@ public class TableSelectionActivity extends AppCompatActivity  implements OnMess
 
         CaptainOrderService.getInstance().ServiceInitiate();
         CaptainOrderService.getInstance().sendCommand(Constants.cmdListTables + SharedPref.getString(TableSelectionActivity.this, "device_id") + "#" + selectedSection);
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     public void OnOrderOptionClick(View view) {
@@ -613,18 +684,41 @@ public class TableSelectionActivity extends AppCompatActivity  implements OnMess
         }
     }
 
+
+
+    public void OnBackOptionClick(View view) {
+        SharedPref.putString(TableSelectionActivity.this,"isLogin","false");
+        SharedPref.putString(TableSelectionActivity.this,"user_status","");
+        SharedPref.putString(TableSelectionActivity.this,"user_id","");
+        startActivity(new Intent(getApplicationContext(),LoginActivity.class));
+        finish();
+    }
+
+    @Override
+    public void onRefresh() {
+        getTableDetails(selectedSection);
+    }
+
     public void onMergeOptionClick(View view) {
+        if (selectedTable.equals("")){
+            DialogBox(getResources().getString(R.string.select_table));
+        }else if (foodStatus.equals("2") || barStatus.equals("2")) {
+            DialogBox(getResources().getString(R.string.bill_printed_for_selected_table));
+        }else{
+            CaptainOrderService.getInstance().sendCommand(Constants.cmdTableUnsplit + SharedPref.getString(TableSelectionActivity.this, "device_id") + "#{'section_id':'" + selectedSection + "','table_id':'" + selectedTable + "'}");
+        }
+    }
+
+    public void onJoinOptionClick(View view) {
         String table_food_status = foodStatus;
         String table_bar_status =  barStatus;
-        if (table_food_status.equals("") && table_bar_status.equals("")){
+        if (selectedTable.equals("")){
+            DialogBox(getResources().getString(R.string.select_table));
+        }else if (table_food_status.equals("") && table_bar_status.equals("")){
             DialogBox(getResources().getString(R.string.order_not_place));
-        }
-        else if (foodStatus.equals("2") || barStatus.equals("2")) {
+        } else if (foodStatus.equals("2") || barStatus.equals("2")) {
             DialogBox(getResources().getString(R.string.bill_printed_for_selected_table));
-//dataBaseHelper.checkTableStatus(SharedPref.getString(TableSelectionActivity.this, "table"), SharedPref.getString(TableSelectionActivity.this, "section"), SharedPref.getString(TableSelectionActivity.this, "user_id"), "FOOD", "table_status").equals("2") ||
-//dataBaseHelper.checkTableStatus(SharedPref.getString(TableSelectionActivity.this, "table"), SharedPref.getString(TableSelectionActivity.this, "section"), SharedPref.getString(TableSelectionActivity.this, "user_id"), "BAR", "table_status").equals("2"))
-        } else
-        {
+        }else {
             Dialog dialog = new Dialog(TableSelectionActivity.this);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.setContentView(R.layout.view_table_merge_dialog);
@@ -647,7 +741,7 @@ public class TableSelectionActivity extends AppCompatActivity  implements OnMess
                 }
             });
 
-            msg.setText("Table "+selectedTable+" merge KOT with");
+            msg.setText("Table "+selectedTableName+" merge KOT with");
 
             ArrayList<TableListDetails> tableList = new ArrayList<>();
             if (Halltables != null){
@@ -706,51 +800,13 @@ public class TableSelectionActivity extends AppCompatActivity  implements OnMess
         }
     }
 
-    public void OnBackOptionClick(View view) {
-        SharedPref.putString(TableSelectionActivity.this,"isLogin","false");
-        SharedPref.putString(TableSelectionActivity.this,"user_status","");
-        SharedPref.putString(TableSelectionActivity.this,"user_id","");
-        startActivity(new Intent(getApplicationContext(),LoginActivity.class));
-        finish();
-//        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.icon);
-//
-//        int width = bitmap.getWidth();
-//        int height = bitmap.getHeight();
-//
-//        int size = bitmap.getRowBytes() * bitmap.getHeight();
-//        ByteBuffer byteBuffer = ByteBuffer.allocate(size);
-//        bitmap.copyPixelsToBuffer(byteBuffer);
-//        byte_arr1 = byteBuffer.array();
-//
-//        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-//
-//        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-//        byte_arr = stream.toByteArray();
-//        image_str = Base64.encodeToString(byte_arr, Base64.DEFAULT);
-//        BillFormatDetails billFormat = databaseHelper.getBillFormatByOrg(SharedPref.getString(AdminDashboardActivity.this,"organisation_id"));
-//        if (billFormat != null){
-//            String printer_id = billFormat.getBill_printer_id();
-//            printer = dataBaseHelper.getPrinter(printer_id);
-//            if (printer != null){
-//                selectedPrinterType = "WIFI";
-////                if (selectedPrinterType.equals("WIFI")){
-////                    {
-//                        selectedPrinterType = "WIFI";
-//                        selectedPrinterIP = "192.168.123.105";
-//                        selectedPrinterPOrt = "9100";
-//                        selectedPrinterComPort = "";
-//                        currIndex = 1;
-////                    }
-////                }else if (selectedPrinterType.equals("USB")){
-////                    selectedPrinterIP = ""; selectedPrinterPOrt = "";
-////                    selectedPrinterComPort = printer.getPrinter_com_port();
-////                    currIndex = 3;
-////                }
-//                startPrinting();
-//            }
-//        }else{
-//            DialogBox(getResources().getString(R.string.printer_not_found));
-//        }
+    public void onSplitOptionClick(View view) {
+        if (selectedTable.equals("")){
+            DialogBox(getResources().getString(R.string.select_table));
+        }else if (foodStatus.equals("2") || barStatus.equals("2")) {
+            DialogBox(getResources().getString(R.string.bill_printed_for_selected_table));
+        }else{
+            CaptainOrderService.getInstance().sendCommand(Constants.cmdTableSplit + SharedPref.getString(TableSelectionActivity.this, "device_id") + "#{'section_id':'" + selectedSection + "','table_id':'" + selectedTable + "'}");
+        }
     }
-
 }

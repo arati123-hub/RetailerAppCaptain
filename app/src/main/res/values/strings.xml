@@ -372,4 +372,7 @@
     <string name="allow_to_print_extra_item_in_bill">Allow to print extra items in bill</string>
     <string name="powered_by">Powered By</string>
     <string name="powercraft_electronics">PowerCraft Electronics Pvt. Ltd.</string>
+    <string name="master_app_service_not_available">Master App Service Not Available</string>
+    <string name="split">Split</string>
+    <string name="join">Join</string>
 </resources>

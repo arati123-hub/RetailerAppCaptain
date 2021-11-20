@@ -116,13 +116,13 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
             @Override
             public void onClick(View view) {
                 listener.onItemClick(editModelArrayList,position);
-                holder.mainDiv.setBackgroundColor(context.getResources().getColor(R.color.gray));
+                holder.noImgDiv.setBackgroundColor(context.getResources().getColor(R.color.gray));
                 Thread background = new Thread() {
                     public void run() {
 
                         try {
                             sleep(300);
-                            holder.mainDiv.setBackgroundColor(context.getResources().getColor(R.color.white));
+                            holder.noImgDiv.setBackgroundColor(context.getResources().getColor(R.color.white));
 
                         } catch (Exception e) {
                             e.printStackTrace();

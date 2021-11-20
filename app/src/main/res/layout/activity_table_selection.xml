@@ -13,12 +13,19 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:layout_weight="1">
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_marginBottom="10dp"/>
+            android:layout_weight="1">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginBottom="10dp"/>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
     </androidx.appcompat.widget.LinearLayoutCompat>
     <View
         android:layout_width="match_parent"
@@ -90,6 +97,7 @@
                 android:padding="7dp"
                 android:layout_gravity="center"
                 android:gravity="center"
+                android:visibility="gone"
                 android:onClick="onClearOptionClick"/>
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/change_table_title"
@@ -106,6 +114,21 @@
                 android:gravity="center"
                 android:onClick="onChangeOptionClick"/>
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/split_title"
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:text="@string/split"
+                android:layout_margin="7dp"
+                android:background="@drawable/back_whiteblack"
+                android:textColor="@color/black"
+                android:drawableTop="@drawable/merge"
+                android:paddingTop="10dp"
+                android:textSize="@dimen/small_text"
+                android:padding="5dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:onClick="onSplitOptionClick"/>
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/merge_title"
                 android:layout_width="70dp"
                 android:layout_height="50dp"
@@ -120,6 +143,21 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:onClick="onMergeOptionClick"/>
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/join_title"
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:text="@string/join"
+                android:layout_margin="7dp"
+                android:background="@drawable/back_whiteblack"
+                android:textColor="@color/black"
+                android:drawableTop="@drawable/merge"
+                android:paddingTop="10dp"
+                android:textSize="@dimen/small_text"
+                android:padding="5dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:onClick="onJoinOptionClick"/>
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/back_title"
                 android:layout_width="70dp"

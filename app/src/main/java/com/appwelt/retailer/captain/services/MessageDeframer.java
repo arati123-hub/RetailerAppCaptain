@@ -176,7 +176,7 @@ public class MessageDeframer {
 
        FileTools.writeCommandLog(context, "1", "1", MsgData, "", false);
 
-       Log.i("TAG", "MessageDataDeframe: "+MsgData);
+
        if (MsgData.startsWith(Constants.cmdLogin)) {
            MsgData = MsgData.replace(Constants.cmdLogin, "");
            String Device_id = MsgData.substring(0, MsgData.indexOf("#"));
@@ -356,6 +356,37 @@ public class MessageDeframer {
                responseData = "";
                responseCommand = "";
            }
+       }else if (MsgData.startsWith(Constants.cmdTableSplit)) {
+           MsgData = MsgData.replace(Constants.cmdTableSplit, "");
+           String Device_id = MsgData.substring(0, MsgData.indexOf("#"));
+           MsgData = MsgData.replace(Device_id + "#", "");
+
+           MsgData = MsgData.replace("~END~", "");
+           if (Device_id.equals(SharedPref.getString(context,"device_id"))) {
+               responseData = MsgData;
+               responseCommand = Constants.cmdTableSplit;
+           }
+           else {
+               responseData = "";
+               responseCommand = "";
+           }
+       }else if (MsgData.startsWith(Constants.cmdTableUnsplit)) {
+           MsgData = MsgData.replace(Constants.cmdTableUnsplit, "");
+           String Device_id = MsgData.substring(0, MsgData.indexOf("#"));
+           MsgData = MsgData.replace(Device_id + "#", "");
+
+           MsgData = MsgData.replace("~END~", "");
+           if (Device_id.equals(SharedPref.getString(context,"device_id"))) {
+               responseData = MsgData;
+               responseCommand = Constants.cmdTableUnsplit;
+           }
+           else {
+               responseData = "";
+               responseCommand = "";
+           }
+       }else  if (MsgData.startsWith(Constants.cmdNoAvailable)) {
+           responseData = MsgData;
+           responseCommand = Constants.cmdNoAvailable;
        }
 
        if (objhandler != null ) {
