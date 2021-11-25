@@ -3,13 +3,12 @@ package com.appwelt.retailer.captain.utils;
 import android.app.Application;
 
 @SuppressWarnings("ALL")
-public class Constants extends Application {
+public class Network_URLs extends Application {
 
 
     public static String FOLDER_NAME = "RetailerApp";
-    public static String FOLDER_NAME_IMAGES = "images";
-    public static String DATABASE_NAME = "retailerdbv.db";
     public static String SHARE_PREFERENCE_FILE = "SharePreferenceValue.json";
+    public static String LICENSE_FILE = "License.json";
     public static String SERVER_URL = "http://13.127.49.54/retailer/";
     public static String FILE_UPLOAD = SERVER_URL +"apiv1/uploads/fileupload.php";
     public static String API_URL = SERVER_URL + "apiv1/";
@@ -22,7 +21,20 @@ public class Constants extends Application {
     public static String ORGANISATION_REQUESTOTP = API_URL + "client/request_client_otp";
     public static String ORGANISATION_RESENDREQUESTOTP = API_URL + "client/resend_request_otp";
     public static String ORGANISATION_VERIFYREQUESTOTP = API_URL + "client/verify_request_otp";
-//
+    public static String SYNC_UPLOAD_DATABASE = API_URL + "sync/upload_database";
+    public static String INSERT_DEVICE = API_URL + "device/insert_device";
+    public static String ADD_DEVICE = API_URL + "device/add_device";
+    public static String CHECK_DEVICE = API_URL + "device/check_device";
+    public static String CHECK_DEVICE_VERSION = API_URL + "device/check_device_version";
+    public static String DEVICE_VALIDITY = API_URL + "device/device_validity";
+    public static String DOWNLOAD_JSON = API_URL + "retailer/downloadjson";
+//    public static String DOWNLOAD_CATEGORY_LANG = API_URL + "retailer/downloadcategorylang";
+//    public static String DOWNLOAD_PRODUCT = API_URL + "retailer/downloadproducts";
+//    public static String DOWNLOAD_PRODUCT_LANG = API_URL + "retailer/downloadproductlang";
+//    public static String DOWNLOAD_PRODUCT_CATEGORY = API_URL + "retailer/downloadproductcategory";
+//    public static String CHECK_DOWNLOAD_AVAILABLE = API_URL + "retailer/check_downloadavailable";
+//    public static String UPDATE_DOWNLOAD_DONE = API_URL + "retailer/update_downloaddone";
+//http://13.127.49.54/retailer/apiv1/client/verify_request_otp
 //    public static String districtList() {
 //        if (ip != null) {
 //            return ip + "districtlist";
@@ -31,25 +43,6 @@ public class Constants extends Application {
 //        }
 //    }
 
-    public static String LOG_FILE_NAME = "CaptainService.log";
-    public static String cmdTest = "#TEST#";
-    public static String cmdLogin = "#LOGIN#";
-    public static String cmdListTables = "#LISTTABLES#";
-    public static String cmdChangeTable = "#CHANGETABLE#";
-    public static String cmdMergeTable = "#MERGETABLE#";
-    public static String cmdClearOrderTable = "#CLEARORDERTABLE#";
-    public static String cmdClearKOTTable = "#CLEARKOTTABLE#";
-    public static String cmdTableOrder = "#TABLEORDER#";
-    public static String cmdPrintKKOT = "#PRINTKOT#";
-    public static String cmdTableKOTData = "#TABLEKOTDATA#";
-    public static String cmdPrintBill = "#PRINTBILL#";
-    public static String cmdPrintCheckKOT = "#PRINTCHECKKOT#";
-    public static String cmdTableSplit = "#TABLESPLIT#";
-    public static String cmdTableUnsplit = "#TABLEUNSPLIT#";
 
-    public static String cmdListProducts = "#LISTPRODUCTS#";
-    public static String cmdListImages = "#LISTIMAGES#";
 
-    public static String cmdNoAvailable = "#NOTAVAILABLE#";
-    public static String cmdDayClose = "#DAYCLOSE#";
 }

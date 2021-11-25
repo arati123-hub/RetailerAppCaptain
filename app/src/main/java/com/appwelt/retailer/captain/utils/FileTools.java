@@ -10,11 +10,15 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
+import java.net.HttpURLConnection;
 import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -145,6 +149,65 @@ public class FileTools {
 		fis.close();
 	}
 
+	public static boolean DownloadFile(String NameZip) {
+		try {
+			Log.i("TAG", "DownloadFile: "+Network_URLs.FILE_STORAGE + NameZip);
+			URL url = new URL( Network_URLs.FILE_STORAGE + NameZip);
+
+			//create the new connection
+			HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+
+			//set up some things on the connection
+			urlConnection.setRequestMethod("GET");
+			urlConnection.setDoOutput(true);
+
+			//and connect!z
+			urlConnection.connect();
+
+			String string = NameZip;
+			String[] parts = string.split("/");
+			String part1 = parts[0]; // 004
+			String part2 = parts[parts.length-1];
+
+			File file = new File(Environment.getExternalStorageDirectory().getPath() + "/RetailerApp/" + part2);
+
+			if (file.exists())
+				file.delete();
+
+			file.createNewFile();
+
+			//this will be used to write the downloaded data into the file we created
+			FileOutputStream fileOutput = new FileOutputStream(file);
+
+			//this will be used in reading the data from the internet
+			InputStream inputStream = urlConnection.getInputStream();
+
+			//this is the total size of the file
+			int totalSize = urlConnection.getContentLength();
+			//variable to store total downloaded bytes
+			int downloadedSize = 0;
+
+			//create a buffer...
+			byte[] buffer = new byte[1024];
+			int bufferLength = 0; //used to store a temporary size of the buffer
+
+			while ( (bufferLength = inputStream.read(buffer)) > 0 ) {
+				fileOutput.write(buffer, 0, bufferLength);
+				downloadedSize += bufferLength;
+			}
+			fileOutput.close();
+			return true;
+
+			//catch some possible errors...
+		} catch (MalformedURLException e) {
+			Log.i("TAG", "DownloadFile: "+e);
+			return false;
+		} catch (IOException e) {
+			Log.i("TAG", "DownloadFile: "+e);
+			return false;
+		}
+
+	}
 
 	public static void unzip(String zipFilePath, String destDir) {
 

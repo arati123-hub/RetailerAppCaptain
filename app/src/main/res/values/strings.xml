@@ -375,4 +375,17 @@
     <string name="master_app_service_not_available">Master App Service Not Available</string>
     <string name="split">Split</string>
     <string name="join">Join</string>
+    <string name="master_day_close">Master Day Close</string>
+    <string name="getting_updated_images">Getting Updated Images</string>
+    <string name="unable_to_get_update">Unable to get update...</string>
+    <string name="downloading_product">Downloading Products</string>
+    <string name="downloading_category_text">Downloading Category Text</string>
+    <string name="download_completed">Downloaded Completed</string>
+    <string name="category_downloaded_successfully">Category Downloaded Successfully</string>
+    <string name="product_downloaded_successfully">Product Downloaded Successfully</string>
+    <string name="downloading_product_text">Downloading Product Text</string>
+    <string name="downloading_category">Downloading Category</string>
+    <string name="error_try_again">Error: Try Again</string>
+    <string name="finishing">Finishing...</string>
+    <string name="organisation_id_not_found">Organization ID not found</string>
 </resources>

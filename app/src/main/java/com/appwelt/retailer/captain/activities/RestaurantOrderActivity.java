@@ -52,6 +52,7 @@ import com.appwelt.retailer.captain.utils.Constants;
 import com.appwelt.retailer.captain.utils.DateConversionClass;
 import com.appwelt.retailer.captain.utils.FontStyle;
 import com.appwelt.retailer.captain.utils.GenerateRandom;
+import com.appwelt.retailer.captain.utils.Network_URLs;
 import com.appwelt.retailer.captain.utils.SharedPref;
 import com.google.gson.Gson;
 
@@ -203,6 +204,45 @@ public class RestaurantOrderActivity extends AppCompatActivity  implements OnMes
 
                 DialogBox(response,null);
             }
+        }else if (strCommand.equals(Constants.cmdDayClose))
+        {
+            Dialog dialog = new Dialog(RestaurantOrderActivity.this);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(R.layout.view_dialog);
+            dialog.setCancelable(true);
+            dialog.setCanceledOnTouchOutside(true);
+            Window window = dialog.getWindow();
+            assert window != null;
+            window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+            AppCompatTextView edt_dialog_title = dialog.findViewById(R.id.edit_title);
+            AppCompatTextView edt_dialog_msg = dialog.findViewById(R.id.edit_msg);
+            AppCompatTextView btn_dialog_cofirm = dialog.findViewById(R.id.confirm_button);
+
+            edt_dialog_title.setText(getResources().getString(R.string.app_name));
+            edt_dialog_msg.setText(getResources().getString(R.string.master_day_close));
+            btn_dialog_cofirm.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    SharedPref.putString(getApplicationContext(),"isLogin","false");
+                    SharedPref.putString(getApplicationContext(),"user_status","");
+                    SharedPref.putString(getApplicationContext(),"user_id","");
+                    startActivity(new Intent(getApplicationContext(),LoginActivity.class));
+                    finish();
+                }
+            });
+
+            edt_dialog_title.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+
+            edt_dialog_title.setTypeface(FontStyle.getFontRegular());
+            edt_dialog_msg.setTypeface(FontStyle.getFontRegular());
+            btn_dialog_cofirm.setTypeface(FontStyle.getFontRegular());
+            dialog.show();
         }
     }
 
@@ -569,149 +609,149 @@ public class RestaurantOrderActivity extends AppCompatActivity  implements OnMes
     }
 
     private void getItemsFromJSON() {
+
+        File ItemList = new File(Environment.getExternalStorageDirectory().getPath() + "/" + Network_URLs.FOLDER_NAME + "/ItemList");
+
         allProducts = new ArrayList<>();
-        File checkFile = new File(Environment.getExternalStorageDirectory().getPath() + "/" + Constants.FOLDER_NAME);
-        if (checkFile.exists()) {
-           File ItemList = new File(checkFile.getAbsolutePath() + "/ItemList");
-            if (ItemList.exists()) {
-                try {
-                    String jsongString = readFromFile(checkFile.getAbsolutePath() + "/ItemList");
-                    JSONObject obj = new JSONObject(jsongString);
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-                        JSONArray bar_arr = null;
-                        JSONArray extra_arr = null;
-                        JSONArray food_arr = null;
+        if (ItemList.exists()) {
+            try {
+                String jsongString = readFromFile(Environment.getExternalStorageDirectory().getPath() + "/" + Network_URLs.FOLDER_NAME + "/ItemList");
+                JSONObject obj = new JSONObject(jsongString);
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                    JSONArray bar_arr = null;
+                    JSONArray extra_arr = null;
+                    JSONArray food_arr = null;
 
 
-                        if (obj.has("food_items") ){
-                            food_arr = new JSONArray(obj.getString("food_items"));}
-                        if (obj.has("bar_items") ){
-                            bar_arr = new JSONArray(obj.getString("bar_items"));}
-                        if (obj.has("extra_items") ){
-                            extra_arr = new JSONArray(obj.getString("extra_items"));}
+                    if (obj.has("food_items") ){
+                        food_arr = new JSONArray(obj.getString("food_items"));}
+                    if (obj.has("bar_items") ){
+                        bar_arr = new JSONArray(obj.getString("bar_items"));}
+                    if (obj.has("extra_items") ){
+                        extra_arr = new JSONArray(obj.getString("extra_items"));}
 
-                        ArrayList<CategoryDetails> foodCategoryDetails = new ArrayList<>();
-                        List<ProductDetails> foodProduct = new ArrayList<>();
-                        if (food_arr != null) {
-                            for (int i = 0; i < food_arr.length(); i++) {
-                                JSONObject cat = new JSONObject(food_arr.get(i).toString());
-                                CategoryDetails sub_obj = new CategoryDetails();
-                                sub_obj.setCategory_id(cat.getString("category_id"));
-                                sub_obj.setCategory_name(cat.getString("category_name"));
-                                sub_obj.setCategory_description(cat.getString("category_description"));
-                                sub_obj.setSequence_nr(cat.getString("sequence_nr"));
-                                sub_obj.setCategory_image(cat.getString("category_image"));
-                                sub_obj.setCategory_type(cat.getString("category_type"));
 
-                                if (cat.has("product_details")) {
-                                    JSONArray product = new JSONArray(cat.getString("product_details"));
-                                    ArrayList<ProductDetails> productDetails = new ArrayList<>();
-                                    for (int j = 0; j < product.length(); j++) {
-                                        JSONObject proDetail = new JSONObject(product.get(j).toString());
-                                        ProductDetails proObj = new ProductDetails();
-                                        proObj.setProduct_id(proDetail.getString("product_id"));
-                                        proObj.setProduct_code(proDetail.getString("product_code"));
-                                        proObj.setProduct_name(proDetail.getString("product_name"));
-                                        if (proDetail.has("product_photo")) {
-                                            proObj.setProduct_photo(proDetail.getString("product_photo"));
-                                        }
-                                        proObj.setProduct_description(proDetail.getString("product_description"));
-                                        proObj.setProduct_price(proDetail.getString("product_price"));
-                                        if (proDetail.has("product_bar_code")){
-                                            proObj.setProduct_bar_code(proDetail.getString("product_bar_code"));
-                                        }
-                                        productDetails.add(proObj);
-                                        foodProduct.add(proObj);
+                    ArrayList<CategoryDetails> foodCategoryDetails = new ArrayList<>();
+                    List<ProductDetails> foodProduct = new ArrayList<>();
+                    if (food_arr != null) {
+                        for (int i = 0; i < food_arr.length(); i++) {
+                            JSONObject cat = new JSONObject(food_arr.get(i).toString());
+                            CategoryDetails sub_obj = new CategoryDetails();
+                            sub_obj.setCategory_id(cat.getString("category_id"));
+                            sub_obj.setCategory_name(cat.getString("category_name"));
+                            sub_obj.setCategory_description(cat.getString("category_description"));
+                            sub_obj.setSequence_nr(cat.getString("sequence_nr"));
+                            sub_obj.setCategory_image(cat.getString("category_image"));
+                            sub_obj.setCategory_type(cat.getString("category_type"));
+
+                            if (cat.has("product_details")) {
+                                JSONArray product = new JSONArray(cat.getString("product_details"));
+                                ArrayList<ProductDetails> productDetails = new ArrayList<>();
+                                for (int j = 0; j < product.length(); j++) {
+                                    JSONObject proDetail = new JSONObject(product.get(j).toString());
+                                    ProductDetails proObj = new ProductDetails();
+                                    proObj.setProduct_id(proDetail.getString("product_id"));
+                                    proObj.setProduct_code(proDetail.getString("product_code"));
+                                    proObj.setProduct_name(proDetail.getString("product_name"));
+                                    if (proDetail.has("product_photo")) {
+                                        proObj.setProduct_photo(proDetail.getString("product_photo"));
                                     }
-                                    sub_obj.setProductDetails(productDetails);
-
-                                }
-                                foodCategoryDetails.add(sub_obj);
-                            }
-                        }
-
-                        ArrayList<CategoryDetails> barCategoryDetails = new ArrayList<>();
-                        List<ProductDetails> barProduct = new ArrayList<>();
-                        if (bar_arr!=null) {
-                            for (int i = 0; i < bar_arr.length(); i++) {
-                                JSONObject cat = new JSONObject(bar_arr.get(i).toString());
-                                CategoryDetails sub_obj = new CategoryDetails();
-                                sub_obj.setCategory_id(cat.getString("category_id"));
-                                sub_obj.setCategory_name(cat.getString("category_name"));
-                                sub_obj.setCategory_description(cat.getString("category_description"));
-                                sub_obj.setSequence_nr(cat.getString("sequence_nr"));
-//                            sub_obj.setParent_id(cat.getString("parent_id"));
-                                sub_obj.setCategory_image(cat.getString("category_image"));
-                                sub_obj.setCategory_type(cat.getString("category_type"));
-
-                                if (cat.has("product_details")) {
-                                    JSONArray product = new JSONArray(cat.getString("product_details"));
-                                    ArrayList<ProductDetails> productDetails = new ArrayList<>();
-                                    for (int j = 0; j < product.length(); j++) {
-                                        JSONObject proDetail = new JSONObject(product.get(j).toString());
-                                        ProductDetails proObj = new ProductDetails();
-                                        proObj.setProduct_id(proDetail.getString("product_id"));
-                                        proObj.setProduct_code(proDetail.getString("product_code"));
-                                        proObj.setProduct_name(proDetail.getString("product_name"));
-                                        if (proDetail.has("product_photo")) {
-                                            proObj.setProduct_photo(proDetail.getString("product_photo"));
-                                        }
-                                        proObj.setProduct_description(proDetail.getString("product_description"));
-                                        proObj.setProduct_price(proDetail.getString("product_price"));
-                                        if (proDetail.has("product_bar_code")){
-                                            proObj.setProduct_bar_code(proDetail.getString("product_bar_code"));
-                                        }
-                                        productDetails.add(proObj);
-                                        barProduct.add(proObj);
+                                    proObj.setProduct_description(proDetail.getString("product_description"));
+                                    proObj.setProduct_price(proDetail.getString("product_price"));
+                                    if (proDetail.has("product_bar_code")){
+                                        proObj.setProduct_bar_code(proDetail.getString("product_bar_code"));
                                     }
-                                    sub_obj.setProductDetails(productDetails);
-
+                                    productDetails.add(proObj);
+                                    foodProduct.add(proObj);
                                 }
-                                barCategoryDetails.add(sub_obj);
+                                sub_obj.setProductDetails(productDetails);
+
                             }
-                        }
-
-                        if (extra_arr != null) {
-                            extraItem = new ArrayList<>();
-                            for (int i = 0; i < extra_arr.length(); i++) {
-                                JSONObject cat = new JSONObject(extra_arr.get(i).toString());
-                                ExtraItem sub_obj = new ExtraItem();
-                                sub_obj.setExtra_item_id(cat.getString("extra_item_id"));
-                                sub_obj.setExtra_item_name(cat.getString("extra_item_name"));
-                                sub_obj.setExtra_item_price(cat.getString("extra_item_price"));
-                                sub_obj.setExtra_item_created_by(cat.getString("extra_item_created_by"));
-                                sub_obj.setExtra_item_created_on(cat.getString("extra_item_created_on"));
-                                extraItem.add(sub_obj);
-                            }
-                        }
-
-                        if (SharedPref.getString(RestaurantOrderActivity.this,"order_type").equals("FOOD")){
-                            categoryDetails = foodCategoryDetails;
-                            allProducts = foodProduct;
-                        }else{
-                            categoryDetails = barCategoryDetails;
-                            allProducts = barProduct;
-                        }
-
-                        if (categoryDetails != null){
-                            loadProductByCategory(categoryDetails.get(0).getProductDetails());
-                            CategoryAdapter adapter = new CategoryAdapter(RestaurantOrderActivity.this, categoryDetails, new CategoryAdapter.OnItemClickListener() {
-                                @Override
-                                public void onItemClick(CategoryDetails item) {
-                                    loadProductByCategory(item.getProductDetails());
-//                            filter(item.getCategory_id());
-                                }
-                            });
-
-                            recyclerViewCategory.setAdapter(adapter);
+                            foodCategoryDetails.add(sub_obj);
                         }
                     }
 
+                    ArrayList<CategoryDetails> barCategoryDetails = new ArrayList<>();
+                    List<ProductDetails> barProduct = new ArrayList<>();
+                    if (bar_arr!=null) {
+                        for (int i = 0; i < bar_arr.length(); i++) {
+                            JSONObject cat = new JSONObject(bar_arr.get(i).toString());
+                            CategoryDetails sub_obj = new CategoryDetails();
+                            sub_obj.setCategory_id(cat.getString("category_id"));
+                            sub_obj.setCategory_name(cat.getString("category_name"));
+                            sub_obj.setCategory_description(cat.getString("category_description"));
+                            sub_obj.setSequence_nr(cat.getString("sequence_nr"));
+//                            sub_obj.setParent_id(cat.getString("parent_id"));
+                            sub_obj.setCategory_image(cat.getString("category_image"));
+                            sub_obj.setCategory_type(cat.getString("category_type"));
 
+                            if (cat.has("product_details")) {
+                                JSONArray product = new JSONArray(cat.getString("product_details"));
+                                ArrayList<ProductDetails> productDetails = new ArrayList<>();
+                                for (int j = 0; j < product.length(); j++) {
+                                    JSONObject proDetail = new JSONObject(product.get(j).toString());
+                                    ProductDetails proObj = new ProductDetails();
+                                    proObj.setProduct_id(proDetail.getString("product_id"));
+                                    proObj.setProduct_code(proDetail.getString("product_code"));
+                                    proObj.setProduct_name(proDetail.getString("product_name"));
+                                    if (proDetail.has("product_photo")) {
+                                        proObj.setProduct_photo(proDetail.getString("product_photo"));
+                                    }
+                                    proObj.setProduct_description(proDetail.getString("product_description"));
+                                    proObj.setProduct_price(proDetail.getString("product_price"));
+                                    if (proDetail.has("product_bar_code")){
+                                        proObj.setProduct_bar_code(proDetail.getString("product_bar_code"));
+                                    }
+                                    productDetails.add(proObj);
+                                    barProduct.add(proObj);
+                                }
+                                sub_obj.setProductDetails(productDetails);
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                            }
+                            barCategoryDetails.add(sub_obj);
+                        }
+                    }
+
+                    if (extra_arr != null) {
+                        extraItem = new ArrayList<>();
+                        for (int i = 0; i < extra_arr.length(); i++) {
+                            JSONObject cat = new JSONObject(extra_arr.get(i).toString());
+                            ExtraItem sub_obj = new ExtraItem();
+                            sub_obj.setExtra_item_id(cat.getString("extra_item_id"));
+                            sub_obj.setExtra_item_name(cat.getString("extra_item_name"));
+                            sub_obj.setExtra_item_price(cat.getString("extra_item_price"));
+                            sub_obj.setExtra_item_created_by(cat.getString("extra_item_created_by"));
+                            sub_obj.setExtra_item_created_on(cat.getString("extra_item_created_on"));
+                            extraItem.add(sub_obj);
+                        }
+                    }
+
+                    if (SharedPref.getString(RestaurantOrderActivity.this,"order_type").equals("FOOD")){
+                        categoryDetails = foodCategoryDetails;
+                        allProducts = foodProduct;
+                    }else{
+                        categoryDetails = barCategoryDetails;
+                        allProducts = barProduct;
+                    }
+
+                    if (categoryDetails != null){
+                        loadProductByCategory(categoryDetails.get(0).getProductDetails());
+                        CategoryAdapter adapter = new CategoryAdapter(RestaurantOrderActivity.this, categoryDetails, new CategoryAdapter.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(CategoryDetails item) {
+                                loadProductByCategory(item.getProductDetails());
+//                            filter(item.getCategory_id());
+                            }
+                        });
+
+                        recyclerViewCategory.setAdapter(adapter);
+                    }
                 }
+
+
+
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -765,27 +805,28 @@ public class RestaurantOrderActivity extends AppCompatActivity  implements OnMes
 
 
     private void addExtraItem() {
-        Dialog dialog = new Dialog(RestaurantOrderActivity.this);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.view_add_order_extra_item_dialog);
-        dialog.setCancelable(true);
-        dialog.setCanceledOnTouchOutside(true);
-        Window window = dialog.getWindow();
-        assert window != null;
-        window.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        if (extraItem != null){
+            Dialog dialog = new Dialog(RestaurantOrderActivity.this);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(R.layout.view_add_order_extra_item_dialog);
+            dialog.setCancelable(true);
+            dialog.setCanceledOnTouchOutside(true);
+            Window window = dialog.getWindow();
+            assert window != null;
+            window.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
-        AppCompatTextView edt_dialog_title = dialog.findViewById(R.id.edit_title);
-        RecyclerView recyclerView = dialog.findViewById(R.id.recycler_view);
+            AppCompatTextView edt_dialog_title = dialog.findViewById(R.id.edit_title);
+            RecyclerView recyclerView = dialog.findViewById(R.id.recycler_view);
 
-        edt_dialog_title.setText(getResources().getString(R.string.app_name));
-        edt_dialog_title.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.dismiss();
-            }
-        });
+            edt_dialog_title.setText(getResources().getString(R.string.app_name));
+            edt_dialog_title.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                }
+            });
 
-        edt_dialog_title.setTypeface(FontStyle.getFontRegular());
+            edt_dialog_title.setTypeface(FontStyle.getFontRegular());
 
 //        if (SharedPref.getString(RestaurantOrderActivity.this,"bill_type").equals("parcel")){
 //            order_id =  dataBaseHelper.checkParcelStatus(SharedPref.getString(RestaurantOrderActivity.this,"table"),order_type,SharedPref.getString(RestaurantOrderActivity.this,"section"),"parcel_order_id");
@@ -793,23 +834,24 @@ public class RestaurantOrderActivity extends AppCompatActivity  implements OnMes
 //            order_id =  dataBaseHelper.checkTableStatus(SharedPref.getString(RestaurantOrderActivity.this,"table"),SharedPref.getString(RestaurantOrderActivity.this,"section"),SharedPref.getString(RestaurantOrderActivity.this,"user_id"),order_type,"order_id");
 //        }
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, true);
-        linearLayoutManager.setReverseLayout(false);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        if (extraItem != null){
-            ExtraItemListAdapter adapter = new ExtraItemListAdapter(RestaurantOrderActivity.this, extraItem,"0", new ExtraItemListAdapter.OnItemClickListener() {
-                @Override
-                public void onItemClick(ExtraItem item) {
-                    addQuantity(item);
-                    dialog.dismiss();
-                }
-            });
-            recyclerView.setAdapter(adapter);
-        }
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, true);
+            linearLayoutManager.setReverseLayout(false);
+            recyclerView.setLayoutManager(linearLayoutManager);
+            if (extraItem != null){
+                ExtraItemListAdapter adapter = new ExtraItemListAdapter(RestaurantOrderActivity.this, extraItem,"0", new ExtraItemListAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(ExtraItem item) {
+                        addQuantity(item);
+                        dialog.dismiss();
+                    }
+                });
+                recyclerView.setAdapter(adapter);
+            }
 
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.setCancelable(false);
-        dialog.show();
+            dialog.setCanceledOnTouchOutside(false);
+            dialog.setCancelable(false);
+            dialog.show();
+        }
     }
 
     private void addQuantity(ExtraItem item) {

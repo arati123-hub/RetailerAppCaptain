@@ -177,7 +177,11 @@ public class MessageDeframer {
        FileTools.writeCommandLog(context, "1", "1", MsgData, "", false);
 
 
-       if (MsgData.startsWith(Constants.cmdLogin)) {
+       if (MsgData.startsWith(Constants.cmdDayClose)) {
+           responseData = "";
+           responseCommand = Constants.cmdDayClose;
+       }
+       else   if (MsgData.startsWith(Constants.cmdLogin)) {
            MsgData = MsgData.replace(Constants.cmdLogin, "");
            String Device_id = MsgData.substring(0, MsgData.indexOf("#"));
            MsgData = MsgData.replace(Device_id + "#", "");

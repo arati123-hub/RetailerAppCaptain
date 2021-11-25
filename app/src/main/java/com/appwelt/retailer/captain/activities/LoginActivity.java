@@ -14,6 +14,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -42,20 +43,29 @@ import com.appwelt.retailer.captain.R;
 import com.appwelt.retailer.captain.services.CaptainOrderService;
 import com.appwelt.retailer.captain.services.MessageDeframer;
 import com.appwelt.retailer.captain.services.OnMessageListener;
+import com.appwelt.retailer.captain.utils.ConnectionDetector;
 import com.appwelt.retailer.captain.utils.Constants;
 import com.appwelt.retailer.captain.utils.FileTools;
 import com.appwelt.retailer.captain.utils.FontStyle;
 import com.appwelt.retailer.captain.utils.MyKeyboard;
+import com.appwelt.retailer.captain.utils.Network_URLs;
+import com.appwelt.retailer.captain.utils.ServiceHandler;
 import com.appwelt.retailer.captain.utils.SharedPref;
+import com.google.gson.Gson;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import okhttp3.FormBody;
+import okhttp3.RequestBody;
 
 public class LoginActivity extends AppCompatActivity implements OnMessageListener  {
 
@@ -71,12 +81,15 @@ public class LoginActivity extends AppCompatActivity implements OnMessageListene
     TextView pinTitle,versionName;
     ImageView btnNext;
     MyKeyboard keyboard;
-    AppCompatImageView server_connectivity;
+    AppCompatImageView server_connectivity,download_assets;
     ProgressDialog progressDialog;
 
+    String downloadImagePath;
 
-    String server_ip,server_port;
 
+    String server_ip,server_port,orgnaisationID,branchID;
+
+    String jsonStr;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,6 +98,8 @@ public class LoginActivity extends AppCompatActivity implements OnMessageListene
         FontStyle.FontStyle(LoginActivity.this);
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+        progressDialog = new ProgressDialog(LoginActivity.this);
         versionName = findViewById(R.id.version_name);
 
         versionName.setTypeface(FontStyle.getFontRegular());
@@ -134,6 +149,7 @@ public class LoginActivity extends AppCompatActivity implements OnMessageListene
 
         if (strCommand.equals(Constants.cmdLogin))
         {
+            progressDialog.dismiss();
             if (strData.startsWith("VALID"))
             {
                 strData = strData.replace("VALID#", "");
@@ -147,17 +163,21 @@ public class LoginActivity extends AppCompatActivity implements OnMessageListene
                     SharedPref.putString(LoginActivity.this, "user_name", objJSON.getString("user_name"));
                     SharedPref.putString(LoginActivity.this,"section", objJSON.getString("section"));
                     SharedPref.putString(LoginActivity.this,"section_name", objJSON.getString("section_name"));
+                    SharedPref.putString(LoginActivity.this,"branch_id", objJSON.getString("branch_id"));
+                    SharedPref.putString(LoginActivity.this,"organisation_id", objJSON.getString("organisation_id"));
 
-                    startActivity(new Intent(getApplicationContext(), TableSelectionActivity.class));
-                    finish();
+                    File checkFile = new File(Environment.getExternalStorageDirectory().getPath() + "/" + Network_URLs.FOLDER_NAME + "/ItemList");
+                    if (checkFile.exists()){
+                        startActivity(new Intent(getApplicationContext(), TableSelectionActivity.class));
+                        finish();
+                    }else{
+                        downloadAssets(objJSON.getString("organisation_id"),objJSON.getString("branch_id"));
+                    }
                 }
                 catch (JSONException e)
                 {
 
                 }
-
-                //CaptainOrderService.getInstance().sendCommand(Constants.cmdListProducts + SharedPref.getString(LoginActivity.this, "device_id") + "#");
-
             }
             else if (strData.startsWith("INVALID"))
             {
@@ -239,6 +259,125 @@ public class LoginActivity extends AppCompatActivity implements OnMessageListene
         }else if (strCommand.equals(Constants.cmdNoAvailable))
         {
             DialogBox(getResources().getString(R.string.master_app_service_not_available));
+        }else if (strCommand.equals(Constants.cmdDayClose))
+        {
+            Dialog dialog = new Dialog(LoginActivity.this);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(R.layout.view_dialog);
+            dialog.setCancelable(true);
+            dialog.setCanceledOnTouchOutside(true);
+            Window window = dialog.getWindow();
+            assert window != null;
+            window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+            AppCompatTextView edt_dialog_title = dialog.findViewById(R.id.edit_title);
+            AppCompatTextView edt_dialog_msg = dialog.findViewById(R.id.edit_msg);
+            AppCompatTextView btn_dialog_cofirm = dialog.findViewById(R.id.confirm_button);
+
+            edt_dialog_title.setText(getResources().getString(R.string.app_name));
+            edt_dialog_msg.setText(getResources().getString(R.string.master_day_close));
+            btn_dialog_cofirm.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    SharedPref.putString(getApplicationContext(),"isLogin","false");
+                    SharedPref.putString(getApplicationContext(),"user_status","");
+                    SharedPref.putString(getApplicationContext(),"user_id","");
+                    startActivity(new Intent(getApplicationContext(),LoginActivity.class));
+                    finish();
+                }
+            });
+
+            edt_dialog_title.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+
+            edt_dialog_title.setTypeface(FontStyle.getFontRegular());
+            edt_dialog_msg.setTypeface(FontStyle.getFontRegular());
+            btn_dialog_cofirm.setTypeface(FontStyle.getFontRegular());
+            dialog.show();
+        }
+    }
+
+    private void downloadAssets(String organisation_id, String branch_id) {
+        orgnaisationID = organisation_id;
+        branchID = branch_id;
+
+        if (orgnaisationID != null && branchID != null){
+            if (orgnaisationID.length()!=0 && branchID.length()!=0){
+                if (isNetworkAvailable()){
+                    progressDialog.setMessage(getResources().getString(R.string.downloading_product));
+                    progressDialog.show();
+                    new download_category().execute();
+                }
+            }else{
+                DialogBox(getResources().getString(R.string.organisation_id_not_found));
+            }
+        }else{
+            DialogBox(getResources().getString(R.string.organisation_id_not_found));
+        }
+    }
+
+    private class DownloadImage extends AsyncTask<String, Void, String> {
+        boolean bReadyforExtract = false;
+        public DownloadImage() {
+        }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+        @Override
+        protected String doInBackground(String... args) {
+            try {
+                bReadyforExtract =  FileTools.DownloadFile(downloadImagePath);
+            } catch (final Exception e) {
+                e.printStackTrace();
+            }
+            return "";
+        }
+        @Override
+        protected void onPostExecute(String jsonStr) {
+            super.onPostExecute(jsonStr);
+            try {
+                if (bReadyforExtract == true)
+                {
+                    progressDialog.setMessage(getResources().getString(R.string.finishing_update));
+
+                    String[] parts = downloadImagePath.split("/");
+                    String part2 = parts[(parts.length-1)];
+
+                    String zipFilePath = Environment.getExternalStorageDirectory().getPath() + "/"  + Network_URLs.FOLDER_NAME + "/" + part2;
+
+                    String destDir = Environment.getExternalStorageDirectory().getPath() + "/"+Network_URLs.FOLDER_NAME+"/images";
+
+                    FileTools.unzip(zipFilePath, destDir);
+
+                    File  dir = new File(Environment.getExternalStorageDirectory().getPath() + "/"+Network_URLs.FOLDER_NAME);
+
+                    String arrFiles[]  = dir.list();
+
+                    for(int i = 0; i<arrFiles.length; i++)
+                    {
+                        File temp = new File(Environment.getExternalStorageDirectory().getPath() + "/"+Network_URLs.FOLDER_NAME+"/" + arrFiles[i]);
+//                        temp.delete();
+                    }
+
+                    progressDialog.dismiss();
+                    startActivity(new Intent(getApplicationContext(), TableSelectionActivity.class));
+                    finish();
+
+
+                } else {
+                    progressDialog.setMessage(getResources().getString(R.string.unable_to_get_update));
+                }
+                FileTools.bUpdated = true;
+                FileTools.DownloadFrom = "";
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -334,7 +473,7 @@ public class LoginActivity extends AppCompatActivity implements OnMessageListene
                    edt_ip2.setError(getResources().getString(R.string.invalid));
                }else if (Integer.valueOf(ip3) > 155 || Integer.valueOf(ip3) < -0){
                    edt_ip3.setError(getResources().getString(R.string.invalid));
-               }else if (Integer.valueOf(ip4) > 155 || Integer.valueOf(ip4) < -0){
+               }else if (Integer.valueOf(ip4) > 255 || Integer.valueOf(ip4) < -0){
                    edt_ip4.setError(getResources().getString(R.string.invalid));
                }else{
                    SharedPref.putString(LoginActivity.this,"server_ip",ip1+"."+ip2+"."+ip3+"."+ip4);
@@ -384,6 +523,7 @@ public class LoginActivity extends AppCompatActivity implements OnMessageListene
 
         pinTitle = findViewById(R.id.pin_title);
         server_connectivity = findViewById(R.id.server_connectivity);
+        download_assets = findViewById(R.id.download_assets);
         pinTitle.setTypeface(FontStyle.getFontRegular());
 
         server_connectivity.setOnClickListener(new View.OnClickListener() {
@@ -392,6 +532,29 @@ public class LoginActivity extends AppCompatActivity implements OnMessageListene
                 askServerDetails();
             }
         });
+
+//        download_assets.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                orgnaisationID = "h1kBdsrE";
+//                branchID = "2gtI6eqD";
+////                orgnaisationID = SharedPref.getString(getApplicationContext(),"organisation_id");
+////                branchID = SharedPref.getString(getApplicationContext(),"branch_id");
+//                if (orgnaisationID != null && branchID != null){
+//                    if (orgnaisationID.length()!=0 && branchID.length()!=0){
+//                        if (isNetworkAvailable()){
+//                            progressDialog.setMessage(getResources().getString(R.string.downloading_category));
+//                            progressDialog.show();
+//                            new download_category().execute();
+//                        }
+//                    }else{
+//                        DialogBox(getResources().getString(R.string.organisation_id_not_found));
+//                    }
+//                }else{
+//                    DialogBox(getResources().getString(R.string.organisation_id_not_found));
+//                }
+//            }
+//        });
         edt_pin = (EditText) findViewById(R.id.edt_pin);
         edt_pin.setFocusable(true);
         edt_pin.setCustomSelectionActionModeCallback(new ActionMode.Callback() {
@@ -468,8 +631,116 @@ public class LoginActivity extends AppCompatActivity implements OnMessageListene
         });
     }
 
+    private class download_category extends AsyncTask<String, Void, String> {
+        @Override
+        protected void onPreExecute() {
+            // TODO Auto-generated method stub
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... args) {
+            // TODO Auto-generated method stub
+
+            try {
+                ServiceHandler shh = new ServiceHandler(LoginActivity.this);
+
+                RequestBody values = new FormBody.Builder()
+                        .add("organisation_id", orgnaisationID)
+                        .add("branch_id", branchID)
+                        .build();
+
+                jsonStr = shh.makeServiceCall(Network_URLs.DOWNLOAD_JSON, ServiceHandler.POST, values);
+                Log.d("Response_org: ", "> " + jsonStr);
+
+
+            } catch (final Exception e) {
+                e.printStackTrace();
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        DialogBox(e.toString());
+                        //Utils.showDialog(AddOrganisationActivity.this, e.toString(), false, false);
+                    }
+                });
+                // workerThread();
+                Log.e("ServiceHandler", e.toString());
+            }
+
+
+            return jsonStr;
+        }
+
+        @Override
+        protected void onPostExecute(String jsonStr) {
+
+            // TODO Auto-generated method stub
+            super.onPostExecute(jsonStr);
+
+            try {
+                if (jsonStr != null) {
+                    JSONObject jsonData = new JSONObject(jsonStr);
+                    String message_code = "999";
+                    JSONObject message_data = null;
+                    if (jsonData.has("message_code"))
+                        message_code = jsonData.getString("message_code");
+
+                    if (message_code.equals("1000")) {
+
+                        //get new data from api
+                        message_data = jsonData.getJSONObject("message_data");
+
+                       handleDownloadedData(message_data);
+
+                        downloadImagePath = orgnaisationID+"/"+branchID+"/"+"retailer_images_download.zip";
+                        progressDialog.setMessage(getResources().getString(R.string.getting_updated_images));
+                        new DownloadImage().execute();
+                    }
+                    else{
+                        progressDialog.dismiss();
+                        DialogBox(jsonData.getString("message_data"));
+                    }
+
+                } else{
+                    progressDialog.dismiss();
+                    DialogBox(getResources().getString(R.string.error_try_again));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+
+    }
+
+    private void handleDownloadedData(JSONObject message_data) {
+
+        try {
+
+            File checkFile = new File(Environment.getExternalStorageDirectory().getPath() + "/" + Network_URLs.FOLDER_NAME);
+
+            if (!checkFile.exists()) {
+                checkFile.mkdir();
+            }
+            FileWriter file = new FileWriter(checkFile.getAbsolutePath() + "/ItemList");
+
+            String json = message_data.toString();
+            file.write(json);
+            file.flush();
+            file.close();
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     private void checkLogin() {
 
+        progressDialog.setMessage(getResources().getString(R.string.please_wait));
+        progressDialog.show();
         CaptainOrderService.getInstance().ServiceInitiate();
 
         CaptainOrderService.getInstance().sendCommand(Constants.cmdLogin + SharedPref.getString(LoginActivity.this, "device_id") + "#" + edt_pin.getText().toString());
@@ -510,6 +781,16 @@ public class LoginActivity extends AppCompatActivity implements OnMessageListene
         edt_dialog_msg.setTypeface(FontStyle.getFontRegular());
         btn_dialog_cofirm.setTypeface(FontStyle.getFontRegular());
         dialog.show();
+    }
+
+    public boolean isNetworkAvailable() {
+        ConnectionDetector cd=new ConnectionDetector(this);
+        if (cd.isConnected()) {
+            return true;
+        }else {
+            Toast.makeText(this,getResources().getString(R.string.device_offline_please_check),Toast.LENGTH_SHORT).show();
+            return false;
+        }
     }
 
     @Override

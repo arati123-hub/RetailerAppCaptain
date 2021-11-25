@@ -169,6 +169,45 @@ public class CheckKOTActivity extends AppCompatActivity  implements OnMessageLis
 
                 DialogBox(response);
             }
+        }else if (strCommand.equals(Constants.cmdDayClose))
+        {
+            Dialog dialog = new Dialog(CheckKOTActivity.this);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(R.layout.view_dialog);
+            dialog.setCancelable(true);
+            dialog.setCanceledOnTouchOutside(true);
+            Window window = dialog.getWindow();
+            assert window != null;
+            window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+            AppCompatTextView edt_dialog_title = dialog.findViewById(R.id.edit_title);
+            AppCompatTextView edt_dialog_msg = dialog.findViewById(R.id.edit_msg);
+            AppCompatTextView btn_dialog_cofirm = dialog.findViewById(R.id.confirm_button);
+
+            edt_dialog_title.setText(getResources().getString(R.string.app_name));
+            edt_dialog_msg.setText(getResources().getString(R.string.master_day_close));
+            btn_dialog_cofirm.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    SharedPref.putString(getApplicationContext(),"isLogin","false");
+                    SharedPref.putString(getApplicationContext(),"user_status","");
+                    SharedPref.putString(getApplicationContext(),"user_id","");
+                    startActivity(new Intent(getApplicationContext(),LoginActivity.class));
+                    finish();
+                }
+            });
+
+            edt_dialog_title.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+
+            edt_dialog_title.setTypeface(FontStyle.getFontRegular());
+            edt_dialog_msg.setTypeface(FontStyle.getFontRegular());
+            btn_dialog_cofirm.setTypeface(FontStyle.getFontRegular());
+            dialog.show();
         }
     }
 
