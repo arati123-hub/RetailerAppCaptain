@@ -13,8 +13,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.Editable;
@@ -48,11 +50,14 @@ import com.appwelt.retailer.captain.model.TableOrderDetail;
 import com.appwelt.retailer.captain.services.CaptainOrderService;
 import com.appwelt.retailer.captain.services.MessageDeframer;
 import com.appwelt.retailer.captain.services.OnMessageListener;
+import com.appwelt.retailer.captain.utils.ConnectionDetector;
 import com.appwelt.retailer.captain.utils.Constants;
 import com.appwelt.retailer.captain.utils.DateConversionClass;
+import com.appwelt.retailer.captain.utils.FileTools;
 import com.appwelt.retailer.captain.utils.FontStyle;
 import com.appwelt.retailer.captain.utils.GenerateRandom;
 import com.appwelt.retailer.captain.utils.Network_URLs;
+import com.appwelt.retailer.captain.utils.ServiceHandler;
 import com.appwelt.retailer.captain.utils.SharedPref;
 import com.google.gson.Gson;
 
@@ -64,11 +69,15 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.FormBody;
+import okhttp3.RequestBody;
 
 public class RestaurantOrderActivity extends AppCompatActivity  implements OnMessageListener {
 
@@ -80,7 +89,7 @@ public class RestaurantOrderActivity extends AppCompatActivity  implements OnMes
     JSONObject orderIdObject;
 
     AppCompatTextView orderTitle,nameTitle,quantityTitle,rateTitle,noOfItemTitle,totalQuantityTitle,totalAmountTitle;
-    AppCompatTextView btnKOT,btnBill,btnCancel,btnBack,btnFood,btnBar,btnExtraItem;
+    AppCompatTextView btnKOT,btnBill,btnCancel,btnBack,btnFood,btnBar,btnExtraItem,btnRefresh;
 
     AppCompatEditText searchByName;
 
@@ -102,6 +111,13 @@ public class RestaurantOrderActivity extends AppCompatActivity  implements OnMes
 
     ArrayList<OrderDetail> nonKOTItems;
     List<ProductDetails> allProducts;
+
+    String organisationID,branchID;
+
+    ProgressDialog progressDialog;
+
+    String downloadImagePath;
+    String jsonStr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -383,6 +399,7 @@ public class RestaurantOrderActivity extends AppCompatActivity  implements OnMes
         btnFood = findViewById(R.id.order_menu_title);
         btnBar = findViewById(R.id.bar_order_title);
         btnExtraItem = findViewById(R.id.extra_item_txt);
+        btnRefresh = findViewById(R.id.btn_refresh);
 
         if (order_type.equals("FOOD")){
             btnFood.setVisibility(View.GONE);
@@ -424,6 +441,7 @@ public class RestaurantOrderActivity extends AppCompatActivity  implements OnMes
         btnExtraItem.setTypeface(FontStyle.getFontRegular());
         section1.setTypeface(FontStyle.getFontRegular());
         section2.setTypeface(FontStyle.getFontRegular());
+        btnRefresh.setTypeface(FontStyle.getFontRegular());
 
         section1.setText(getResources().getString(R.string.product));
         section2.setText(getResources().getString(R.string.order));
@@ -606,6 +624,199 @@ public class RestaurantOrderActivity extends AppCompatActivity  implements OnMes
                 }
             }
         });
+
+        btnRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                downloadAssets();
+            }
+        });
+    }
+
+    private void downloadAssets() {
+        organisationID = SharedPref.getString(getApplicationContext(),"organisation_id");
+        branchID = SharedPref.getString(getApplicationContext(),"branch_id");
+
+        if (organisationID != null && branchID != null){
+            if (organisationID.length()!=0 && branchID.length()!=0){
+                if (isNetworkAvailable()){
+                    progressDialog.setMessage(getResources().getString(R.string.downloading_product));
+                    progressDialog.show();
+                    new download_category().execute();
+                }
+            }else{
+                DialogBox(getResources().getString(R.string.organisation_id_not_found),null);
+            }
+        }else{
+            DialogBox(getResources().getString(R.string.organisation_id_not_found),null);
+        }
+    }
+
+    private class download_category extends AsyncTask<String, Void, String> {
+        @Override
+        protected void onPreExecute() {
+            // TODO Auto-generated method stub
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... args) {
+            // TODO Auto-generated method stub
+
+            try {
+                ServiceHandler shh = new ServiceHandler(RestaurantOrderActivity.this);
+
+                RequestBody values = new FormBody.Builder()
+                        .add("organisation_id", organisationID)
+                        .add("branch_id", branchID)
+                        .build();
+
+                jsonStr = shh.makeServiceCall(Network_URLs.DOWNLOAD_JSON, ServiceHandler.POST, values);
+                Log.d("Response_org: ", "> " + jsonStr);
+
+
+            } catch (final Exception e) {
+                e.printStackTrace();
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        DialogBox(e.toString(),null);
+                        //Utils.showDialog(AddOrganisationActivity.this, e.toString(), false, false);
+                    }
+                });
+                // workerThread();
+                Log.e("ServiceHandler", e.toString());
+            }
+
+
+            return jsonStr;
+        }
+
+        @Override
+        protected void onPostExecute(String jsonStr) {
+
+            // TODO Auto-generated method stub
+            super.onPostExecute(jsonStr);
+
+            try {
+                if (jsonStr != null) {
+                    JSONObject jsonData = new JSONObject(jsonStr);
+                    String message_code = "999";
+                    JSONObject message_data = null;
+                    if (jsonData.has("message_code"))
+                        message_code = jsonData.getString("message_code");
+
+                    if (message_code.equals("1000")) {
+
+                        //get new data from api
+                        message_data = jsonData.getJSONObject("message_data");
+
+                        handleDownloadedData(message_data);
+
+                        downloadImagePath = organisationID+"/"+branchID+"/"+"retailer_images_download.zip";
+                        progressDialog.setMessage(getResources().getString(R.string.getting_updated_images));
+                        new DownloadImage().execute();
+                    }
+                    else{
+                        progressDialog.dismiss();
+                        DialogBox(jsonData.getString("message_data"),null);
+                    }
+
+                } else{
+                    progressDialog.dismiss();
+                    DialogBox(getResources().getString(R.string.error_try_again),null);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+
+    }
+
+    private void handleDownloadedData(JSONObject message_data) {
+
+        try {
+
+            File checkFile = new File(Environment.getExternalStorageDirectory().getPath() + "/" + Network_URLs.FOLDER_NAME);
+
+            if (!checkFile.exists()) {
+                checkFile.mkdir();
+            }
+            FileWriter file = new FileWriter(checkFile.getAbsolutePath() + "/ItemList");
+
+            String json = message_data.toString();
+            file.write(json);
+            file.flush();
+            file.close();
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private class DownloadImage extends AsyncTask<String, Void, String> {
+        boolean bReadyforExtract = false;
+        public DownloadImage() {
+        }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+        @Override
+        protected String doInBackground(String... args) {
+            try {
+                bReadyforExtract =  FileTools.DownloadFile(downloadImagePath);
+            } catch (final Exception e) {
+                e.printStackTrace();
+            }
+            return "";
+        }
+        @Override
+        protected void onPostExecute(String jsonStr) {
+            super.onPostExecute(jsonStr);
+            try {
+                if (bReadyforExtract == true)
+                {
+                    progressDialog.setMessage(getResources().getString(R.string.finishing_update));
+
+                    String[] parts = downloadImagePath.split("/");
+                    String part2 = parts[(parts.length-1)];
+
+                    String zipFilePath = Environment.getExternalStorageDirectory().getPath() + "/"  + Network_URLs.FOLDER_NAME + "/" + part2;
+
+                    String destDir = Environment.getExternalStorageDirectory().getPath() + "/"+Network_URLs.FOLDER_NAME+"/images";
+
+                    FileTools.unzip(zipFilePath, destDir);
+
+                    File  dir = new File(Environment.getExternalStorageDirectory().getPath() + "/"+Network_URLs.FOLDER_NAME);
+
+                    String arrFiles[]  = dir.list();
+
+                    for(int i = 0; i<arrFiles.length; i++)
+                    {
+                        File temp = new File(Environment.getExternalStorageDirectory().getPath() + "/"+Network_URLs.FOLDER_NAME+"/" + arrFiles[i]);
+//                        temp.delete();
+                    }
+
+                    progressDialog.dismiss();
+                    startActivity(new Intent(getApplicationContext(), RestaurantOrderActivity.class));
+                    finish();
+
+
+                } else {
+                    progressDialog.setMessage(getResources().getString(R.string.unable_to_get_update));
+                }
+                FileTools.bUpdated = true;
+                FileTools.DownloadFrom = "";
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void getItemsFromJSON() {
@@ -1192,5 +1403,15 @@ public class RestaurantOrderActivity extends AppCompatActivity  implements OnMes
 
     public void OnExtraItemOptionClick(View view) {
         addExtraItem();
+    }
+
+    public boolean isNetworkAvailable() {
+        ConnectionDetector cd=new ConnectionDetector(this);
+        if (cd.isConnected()) {
+            return true;
+        }else {
+            Toast.makeText(this,getResources().getString(R.string.device_offline_please_check),Toast.LENGTH_SHORT).show();
+            return false;
+        }
     }
 }

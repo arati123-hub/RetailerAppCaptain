@@ -388,4 +388,6 @@
     <string name="error_try_again">Error: Try Again</string>
     <string name="finishing">Finishing...</string>
     <string name="organisation_id_not_found">Organization ID not found</string>
+    <string name="refresh">Refresh</string>
+    <string name="sync">Sync</string>
 </resources>
