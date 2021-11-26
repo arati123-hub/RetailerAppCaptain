@@ -125,6 +125,7 @@ public class RestaurantOrderActivity extends AppCompatActivity  implements OnMes
         setContentView(R.layout.activity_restaurant_order);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         FontStyle.FontStyle(RestaurantOrderActivity.this);
+        progressDialog = new ProgressDialog(RestaurantOrderActivity.this);
 
         if (CaptainOrderService.getInstance() == null)
         {
@@ -634,8 +635,11 @@ public class RestaurantOrderActivity extends AppCompatActivity  implements OnMes
     }
 
     private void downloadAssets() {
-        organisationID = SharedPref.getString(getApplicationContext(),"organisation_id");
-        branchID = SharedPref.getString(getApplicationContext(),"branch_id");
+//        organisationID = SharedPref.getString(getApplicationContext(),"organisation_id");
+//        branchID = SharedPref.getString(getApplicationContext(),"branch_id");
+
+        organisationID = "h1kBdsrE";
+        branchID = "2gtI6eqD";
 
         if (organisationID != null && branchID != null){
             if (organisationID.length()!=0 && branchID.length()!=0){
