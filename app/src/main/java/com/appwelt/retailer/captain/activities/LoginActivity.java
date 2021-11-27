@@ -95,6 +95,8 @@ public class LoginActivity extends AppCompatActivity implements OnMessageListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        startActivity(new Intent(getApplicationContext(),RestaurantOrderActivity.class));
+
         FontStyle.FontStyle(LoginActivity.this);
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
@@ -165,6 +167,7 @@ public class LoginActivity extends AppCompatActivity implements OnMessageListene
                     SharedPref.putString(LoginActivity.this,"section_name", objJSON.getString("section_name"));
                     SharedPref.putString(LoginActivity.this,"branch_id", objJSON.getString("branch_id"));
                     SharedPref.putString(LoginActivity.this,"organisation_id", objJSON.getString("organisation_id"));
+                    SharedPref.putString(LoginActivity.this,"organisation_logo", objJSON.getString("organisation_logo"));
 
                     File checkFile = new File(Environment.getExternalStorageDirectory().getPath() + "/" + Network_URLs.FOLDER_NAME + "/ItemList");
                     if (checkFile.exists()){

@@ -112,7 +112,7 @@ public class RestaurantOrderActivity extends AppCompatActivity  implements OnMes
     ArrayList<OrderDetail> nonKOTItems;
     List<ProductDetails> allProducts;
 
-    String organisationID,branchID;
+    String organisationID,branchID,organisationLogo;
 
     ProgressDialog progressDialog;
 
@@ -635,11 +635,9 @@ public class RestaurantOrderActivity extends AppCompatActivity  implements OnMes
     }
 
     private void downloadAssets() {
-//        organisationID = SharedPref.getString(getApplicationContext(),"organisation_id");
-//        branchID = SharedPref.getString(getApplicationContext(),"branch_id");
-
-        organisationID = "h1kBdsrE";
-        branchID = "2gtI6eqD";
+        organisationID = SharedPref.getString(getApplicationContext(),"organisation_id");
+        branchID = SharedPref.getString(getApplicationContext(),"branch_id");
+        organisationLogo = SharedPref.getString(getApplicationContext(),"organisation_logo");
 
         if (organisationID != null && branchID != null){
             if (organisationID.length()!=0 && branchID.length()!=0){
@@ -806,6 +804,10 @@ public class RestaurantOrderActivity extends AppCompatActivity  implements OnMes
 //                        temp.delete();
                     }
 
+                    if (organisationLogo!=null && organisationLogo.length()!=0){
+                        new DownloadLogo().execute();
+                    }
+
                     progressDialog.dismiss();
                     startActivity(new Intent(getApplicationContext(), RestaurantOrderActivity.class));
                     finish();
@@ -822,6 +824,66 @@ public class RestaurantOrderActivity extends AppCompatActivity  implements OnMes
             }
         }
     }
+
+    private class DownloadLogo extends AsyncTask<String, Void, String> {
+        boolean bReadyforExtract = false;
+        public DownloadLogo() {
+        }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+        @Override
+        protected String doInBackground(String... args) {
+            try {
+                bReadyforExtract =  FileTools.DownloadFile(organisationLogo);
+            } catch (final Exception e) {
+                e.printStackTrace();
+            }
+            return "";
+        }
+        @Override
+        protected void onPostExecute(String jsonStr) {
+            super.onPostExecute(jsonStr);
+            try {
+                if (bReadyforExtract == true)
+                {
+//                    progressDialog.setMessage(getResources().getString(R.string.finishing_update));
+
+                    String[] parts = organisationLogo.split("/");
+                    String part2 = parts[(parts.length-1)];
+
+//                    String zipFilePath = Environment.getExternalStorageDirectory().getPath() + "/"  + Network_URLs.FOLDER_NAME + "/" + part2;
+//
+//                    String destDir = Environment.getExternalStorageDirectory().getPath() + "/"+Network_URLs.FOLDER_NAME+"/images";
+//
+//                    FileTools.unzip(zipFilePath, destDir);
+//
+//                    File  dir = new File(Environment.getExternalStorageDirectory().getPath() + "/"+Network_URLs.FOLDER_NAME);
+//
+//                    String arrFiles[]  = dir.list();
+//
+//                    for(int i = 0; i<arrFiles.length; i++)
+//                    {
+//                        File temp = new File(Environment.getExternalStorageDirectory().getPath() + "/"+Network_URLs.FOLDER_NAME+"/" + arrFiles[i]);
+////                        temp.delete();
+//                    }
+
+
+                    SharedPref.putString(getApplicationContext(),"organisation_logo",part2);
+//
+//                    textFiles(Environment.getExternalStorageDirectory().getPath()+"/"+Network_URLs.FOLDER_NAME);
+
+                }
+                FileTools.bUpdated = true;
+                FileTools.DownloadFrom = "";
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     private void getItemsFromJSON() {
 
