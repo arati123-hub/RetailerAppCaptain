@@ -27,6 +27,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
                 <ImageView
+                    android:id="@+id/logo"
                     android:layout_width="180dp"
                     android:layout_height="180dp"
                     android:src="@drawable/icon"

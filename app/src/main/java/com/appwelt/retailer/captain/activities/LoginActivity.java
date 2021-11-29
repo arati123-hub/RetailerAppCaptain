@@ -52,6 +52,7 @@ import com.appwelt.retailer.captain.utils.Network_URLs;
 import com.appwelt.retailer.captain.utils.ServiceHandler;
 import com.appwelt.retailer.captain.utils.SharedPref;
 import com.google.gson.Gson;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -85,17 +86,18 @@ public class LoginActivity extends AppCompatActivity implements OnMessageListene
     ProgressDialog progressDialog;
 
     String downloadImagePath;
+    ImageView logo;
 
-
-    String server_ip,server_port,orgnaisationID,branchID;
+    String server_ip,server_port,orgnaisationID,branchID,logoPath;
 
     String jsonStr;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        startActivity(new Intent(getApplicationContext(),RestaurantOrderActivity.class));
+//        startActivity(new Intent(getApplicationContext(),RestaurantOrderActivity.class));
 
         FontStyle.FontStyle(LoginActivity.this);
 
@@ -104,9 +106,24 @@ public class LoginActivity extends AppCompatActivity implements OnMessageListene
         progressDialog = new ProgressDialog(LoginActivity.this);
         versionName = findViewById(R.id.version_name);
 
+        logo = findViewById(R.id.logo);
         versionName.setTypeface(FontStyle.getFontRegular());
 
         versionName.setText("Ver. "+ BuildConfig.VERSION_NAME);
+
+        String logo_name = SharedPref.getString(getApplicationContext(),"organisation_logo");
+        File imgFile = new File(Environment.getExternalStorageDirectory()+"/RetailerApp/"+
+                logo_name);
+
+        if (imgFile!=null){
+            if(imgFile.exists() && logo_name.length() != 0){
+                Picasso.with(getApplicationContext())
+                        .load(imgFile)
+                        .error(R.drawable.ic_photo)
+                        .into(logo);
+            }
+
+        }
 
         server_ip = SharedPref.getString(LoginActivity.this,"server_ip");
         server_port = SharedPref.getString(LoginActivity.this,"server_port");
@@ -167,7 +184,11 @@ public class LoginActivity extends AppCompatActivity implements OnMessageListene
                     SharedPref.putString(LoginActivity.this,"section_name", objJSON.getString("section_name"));
                     SharedPref.putString(LoginActivity.this,"branch_id", objJSON.getString("branch_id"));
                     SharedPref.putString(LoginActivity.this,"organisation_id", objJSON.getString("organisation_id"));
-                    SharedPref.putString(LoginActivity.this,"organisation_logo", objJSON.getString("organisation_logo"));
+                    SharedPref.putString(LoginActivity.this,"organisation_logo_path", objJSON.getString("organisation_logo"));
+
+                    orgnaisationID =  objJSON.getString("organisation_id");
+                    branchID = objJSON.getString("branch_id");
+                    logoPath =  objJSON.getString("organisation_logo");
 
                     File checkFile = new File(Environment.getExternalStorageDirectory().getPath() + "/" + Network_URLs.FOLDER_NAME + "/ItemList");
                     if (checkFile.exists()){
@@ -366,7 +387,9 @@ public class LoginActivity extends AppCompatActivity implements OnMessageListene
                         File temp = new File(Environment.getExternalStorageDirectory().getPath() + "/"+Network_URLs.FOLDER_NAME+"/" + arrFiles[i]);
 //                        temp.delete();
                     }
-
+                    if (logoPath!=null && logoPath.length()!=0){
+                        new DownloadLogo().execute();
+                    }
                     progressDialog.dismiss();
                     startActivity(new Intent(getApplicationContext(), TableSelectionActivity.class));
                     finish();
@@ -374,6 +397,44 @@ public class LoginActivity extends AppCompatActivity implements OnMessageListene
 
                 } else {
                     progressDialog.setMessage(getResources().getString(R.string.unable_to_get_update));
+                }
+                FileTools.bUpdated = true;
+                FileTools.DownloadFrom = "";
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private class DownloadLogo extends AsyncTask<String, Void, String> {
+        boolean bReadyforExtract = false;
+        public DownloadLogo() {
+        }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+        @Override
+        protected String doInBackground(String... args) {
+            try {
+                bReadyforExtract =  FileTools.DownloadFile(logoPath);
+            } catch (final Exception e) {
+                e.printStackTrace();
+            }
+            return "";
+        }
+        @Override
+        protected void onPostExecute(String jsonStr) {
+            super.onPostExecute(jsonStr);
+            try {
+                if (bReadyforExtract == true)
+                {
+                    String[] parts = logoPath.split("/");
+                    String part2 = parts[(parts.length-1)];
+
+                    SharedPref.putString(getApplicationContext(),"organisation_logo",part2);
+
                 }
                 FileTools.bUpdated = true;
                 FileTools.DownloadFrom = "";

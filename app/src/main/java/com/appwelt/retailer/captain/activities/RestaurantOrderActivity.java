@@ -506,7 +506,6 @@ public class RestaurantOrderActivity extends AppCompatActivity  implements OnMes
         linearLayoutManager.setReverseLayout(false);
         recyclerViewCategory.setLayoutManager(linearLayoutManager);
         recyclerViewMenuItem.setVisibility(View.VISIBLE);
-//        new LoadProducts().execute();
 
         getItemsFromJSON();
 
@@ -637,7 +636,11 @@ public class RestaurantOrderActivity extends AppCompatActivity  implements OnMes
     private void downloadAssets() {
         organisationID = SharedPref.getString(getApplicationContext(),"organisation_id");
         branchID = SharedPref.getString(getApplicationContext(),"branch_id");
-        organisationLogo = SharedPref.getString(getApplicationContext(),"organisation_logo");
+        organisationLogo = SharedPref.getString(getApplicationContext(),"organisation_logo_path");
+
+//        organisationID = "FQM2uzTi";
+//        branchID = "jdJ69yit";
+//        organisationLogo = "organisation_logos/FQM2uzTi.png";
 
         if (organisationID != null && branchID != null){
             if (organisationID.length()!=0 && branchID.length()!=0){
