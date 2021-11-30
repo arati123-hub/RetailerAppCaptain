@@ -183,7 +183,7 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.MyVi
                         addBtn.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                if (quantity.getText().toString().length() != 0){
+                                if (quantity.getText().toString().length() != 0 && Integer.valueOf(quantity.getText().toString()) < 999){
                                     quantity.setText(String.valueOf(Integer.valueOf(quantity.getText().toString())+1));
                                 }else{
                                     quantity.setError(context.getResources().getString(R.string.required));

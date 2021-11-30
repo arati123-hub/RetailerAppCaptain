@@ -127,6 +127,7 @@
             android:background="@drawable/back_trans_black"
             android:textSize="@dimen/text_size"
             android:maxLines="1"
+            android:maxLength="5"
             android:padding="10dp"
             android:textColor="@color/black"
             android:singleLine="true"

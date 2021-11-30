@@ -10,14 +10,18 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.appwelt.retailer.captain.R;
 import com.appwelt.retailer.captain.adapter.TableDetailsAdapter;
@@ -26,16 +30,26 @@ import com.appwelt.retailer.captain.model.TableListDetails;
 import com.appwelt.retailer.captain.services.CaptainOrderService;
 import com.appwelt.retailer.captain.services.MessageDeframer;
 import com.appwelt.retailer.captain.services.OnMessageListener;
+import com.appwelt.retailer.captain.utils.ConnectionDetector;
 import com.appwelt.retailer.captain.utils.Constants;
+import com.appwelt.retailer.captain.utils.FileTools;
 import com.appwelt.retailer.captain.utils.FontStyle;
+import com.appwelt.retailer.captain.utils.Network_URLs;
+import com.appwelt.retailer.captain.utils.ServiceHandler;
 import com.appwelt.retailer.captain.utils.SharedPref;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+
+import okhttp3.FormBody;
+import okhttp3.RequestBody;
 
 public class TableSelectionActivity extends AppCompatActivity  implements OnMessageListener,SwipeRefreshLayout.OnRefreshListener  {
 
@@ -49,15 +63,23 @@ public class TableSelectionActivity extends AppCompatActivity  implements OnMess
     ArrayList<TableListDetails> Halltables  = new ArrayList<>();
     private TableDetailsAdapter adapter;
 
-    AppCompatTextView bill_title,change_table_title,bar_order_title,clean_table_title,btnSplit,btnJoin,btn_merge,btn_back;
+    AppCompatTextView bill_title,change_table_title,bar_order_title,clean_table_title,btnSplit,btnJoin,btn_merge,btn_back,btnRefresh;
     FileOutputStream stream;
     SwipeRefreshLayout mSwipeRefreshLayout;
 
+    String organisationID,branchID,organisationLogo;
+
+    String downloadImagePath;
+    String jsonStr;
+
+    ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_table_selection);
         FontStyle.FontStyle(TableSelectionActivity.this);
+
+        progressDialog = new ProgressDialog(TableSelectionActivity.this);
 
         if (CaptainOrderService.getInstance() == null)
         {
@@ -277,8 +299,8 @@ public class TableSelectionActivity extends AppCompatActivity  implements OnMess
                     TableListDetails obj = new TableListDetails();
                     obj.setCollector_id(jsonObj.getString("collector_id"));
                     obj.setCollector_name(jsonObj.getString("collector_name"));
-                    obj.setCollector_image(jsonObj.getString("collector_image"));
-                    obj.setCollector_type(jsonObj.getString("collector_type"));
+//                    obj.setCollector_image(jsonObj.getString("collector_image"));
+//                    obj.setCollector_type(jsonObj.getString("collector_type"));
                     obj.setCollector_status(jsonObj.getString("collector_status"));
                     obj.setCollector_split_series_no(jsonObj.getString("collector_split_series_no"));
 
@@ -400,7 +422,7 @@ public class TableSelectionActivity extends AppCompatActivity  implements OnMess
         btnSplit = findViewById(R.id.split_title);
         btnJoin = findViewById(R.id.join_title);
         btn_back = findViewById(R.id.back_title);
-
+        btnRefresh = findViewById(R.id.btn_refresh);
         //by default section selection
         selectedSection = SharedPref.getString(TableSelectionActivity.this, "section"); //dataBaseHelper.getSectiondetails().get(0).getSection_id();
 
@@ -414,6 +436,14 @@ public class TableSelectionActivity extends AppCompatActivity  implements OnMess
         btnSplit.setTypeface(FontStyle.getFontRegular());
         btnJoin.setTypeface(FontStyle.getFontRegular());
         btn_back.setTypeface(FontStyle.getFontRegular());
+        btnRefresh.setTypeface(FontStyle.getFontRegular());
+
+        btnRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                downloadAssets();
+            }
+        });
 
         //SwipeRefreshLayout
         mSwipeRefreshLayout = findViewById(R.id.swipe_container);
@@ -435,6 +465,260 @@ public class TableSelectionActivity extends AppCompatActivity  implements OnMess
             }
         });
         getTableDetails(selectedSection);
+    }
+
+    private void downloadAssets() {
+        organisationID = SharedPref.getString(getApplicationContext(),"organisation_id");
+        branchID = SharedPref.getString(getApplicationContext(),"branch_id");
+        organisationLogo = SharedPref.getString(getApplicationContext(),"organisation_logo_path");
+
+//        organisationID = "Lg08Tcn7";
+//        branchID = "K5o7ziXp";
+//        organisationLogo = "organisation_logos/Lg08Tcn7.png";
+
+        if (organisationID != null && branchID != null){
+            if (organisationID.length()!=0 && branchID.length()!=0){
+                if (isNetworkAvailable()){
+                    progressDialog.setMessage(getResources().getString(R.string.downloading_product));
+                    progressDialog.show();
+                    new download_category().execute();
+                }
+            }else{
+                DialogBox(getResources().getString(R.string.organisation_id_not_found));
+            }
+        }else{
+            DialogBox(getResources().getString(R.string.organisation_id_not_found));
+        }
+    }
+
+    private class download_category extends AsyncTask<String, Void, String> {
+        @Override
+        protected void onPreExecute() {
+            // TODO Auto-generated method stub
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... args) {
+            // TODO Auto-generated method stub
+
+            try {
+                ServiceHandler shh = new ServiceHandler(TableSelectionActivity.this);
+
+                RequestBody values = new FormBody.Builder()
+                        .add("organisation_id", organisationID)
+                        .add("branch_id", branchID)
+                        .build();
+
+                jsonStr = shh.makeServiceCall(Network_URLs.DOWNLOAD_JSON, ServiceHandler.POST, values);
+                Log.d("Response_org: ", "> " + jsonStr);
+
+
+            } catch (final Exception e) {
+                e.printStackTrace();
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        DialogBox(e.toString());
+                        //Utils.showDialog(AddOrganisationActivity.this, e.toString(), false, false);
+                    }
+                });
+                // workerThread();
+                Log.e("ServiceHandler", e.toString());
+            }
+
+
+            return jsonStr;
+        }
+
+        @Override
+        protected void onPostExecute(String jsonStr) {
+
+            // TODO Auto-generated method stub
+            super.onPostExecute(jsonStr);
+
+            try {
+                if (jsonStr != null) {
+                    JSONObject jsonData = new JSONObject(jsonStr);
+                    String message_code = "999";
+                    JSONObject message_data = null;
+                    if (jsonData.has("message_code"))
+                        message_code = jsonData.getString("message_code");
+
+                    if (message_code.equals("1000")) {
+
+                        //get new data from api
+                        message_data = jsonData.getJSONObject("message_data");
+
+                        handleDownloadedData(message_data);
+
+                        downloadImagePath = organisationID+"/"+branchID+"/"+"retailer_images_download.zip";
+                        progressDialog.setMessage(getResources().getString(R.string.getting_updated_images));
+                        new DownloadImage().execute();
+                    }
+                    else{
+                        progressDialog.dismiss();
+                        DialogBox(jsonData.getString("message_data"));
+                    }
+
+                } else{
+                    progressDialog.dismiss();
+                    DialogBox(getResources().getString(R.string.error_try_again));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+
+    }
+
+    private void handleDownloadedData(JSONObject message_data) {
+
+        try {
+
+            File checkFile = new File(Environment.getExternalStorageDirectory().getPath() + "/" + Network_URLs.FOLDER_NAME);
+
+            if (!checkFile.exists()) {
+                checkFile.mkdir();
+            }
+            FileWriter file = new FileWriter(checkFile.getAbsolutePath() + "/ItemList");
+
+            String json = message_data.toString();
+            file.write(json);
+            file.flush();
+            file.close();
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private class DownloadImage extends AsyncTask<String, Void, String> {
+        boolean bReadyforExtract = false;
+        public DownloadImage() {
+        }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+        @Override
+        protected String doInBackground(String... args) {
+            try {
+                bReadyforExtract =  FileTools.DownloadFile(downloadImagePath);
+            } catch (final Exception e) {
+                e.printStackTrace();
+            }
+            return "";
+        }
+        @Override
+        protected void onPostExecute(String jsonStr) {
+            super.onPostExecute(jsonStr);
+            try {
+                if (bReadyforExtract == true)
+                {
+                    progressDialog.setMessage(getResources().getString(R.string.finishing_update));
+
+                    String[] parts = downloadImagePath.split("/");
+                    String part2 = parts[(parts.length-1)];
+
+                    String zipFilePath = Environment.getExternalStorageDirectory().getPath() + "/"  + Network_URLs.FOLDER_NAME + "/" + part2;
+
+                    String destDir = Environment.getExternalStorageDirectory().getPath() + "/"+Network_URLs.FOLDER_NAME+"/images";
+
+                    FileTools.unzip(zipFilePath, destDir);
+
+                    File  dir = new File(Environment.getExternalStorageDirectory().getPath() + "/"+Network_URLs.FOLDER_NAME);
+
+                    String arrFiles[]  = dir.list();
+
+                    for(int i = 0; i<arrFiles.length; i++)
+                    {
+                        File temp = new File(Environment.getExternalStorageDirectory().getPath() + "/"+Network_URLs.FOLDER_NAME+"/" + arrFiles[i]);
+//                        temp.delete();
+                    }
+
+                    if (organisationLogo!=null && organisationLogo.length()!=0){
+                        new DownloadLogo().execute();
+                    }
+
+                    progressDialog.dismiss();
+                    startActivity(new Intent(getApplicationContext(), RestaurantOrderActivity.class));
+                    finish();
+
+
+                } else {
+                    progressDialog.setMessage(getResources().getString(R.string.unable_to_get_update));
+                }
+                FileTools.bUpdated = true;
+                FileTools.DownloadFrom = "";
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private class DownloadLogo extends AsyncTask<String, Void, String> {
+        boolean bReadyforExtract = false;
+        public DownloadLogo() {
+        }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+        @Override
+        protected String doInBackground(String... args) {
+            try {
+                bReadyforExtract =  FileTools.DownloadFile(organisationLogo);
+            } catch (final Exception e) {
+                e.printStackTrace();
+            }
+            return "";
+        }
+        @Override
+        protected void onPostExecute(String jsonStr) {
+            super.onPostExecute(jsonStr);
+            try {
+                if (bReadyforExtract == true)
+                {
+//                    progressDialog.setMessage(getResources().getString(R.string.finishing_update));
+
+                    String[] parts = organisationLogo.split("/");
+                    String part2 = parts[(parts.length-1)];
+
+//                    String zipFilePath = Environment.getExternalStorageDirectory().getPath() + "/"  + Network_URLs.FOLDER_NAME + "/" + part2;
+//
+//                    String destDir = Environment.getExternalStorageDirectory().getPath() + "/"+Network_URLs.FOLDER_NAME+"/images";
+//
+//                    FileTools.unzip(zipFilePath, destDir);
+//
+//                    File  dir = new File(Environment.getExternalStorageDirectory().getPath() + "/"+Network_URLs.FOLDER_NAME);
+//
+//                    String arrFiles[]  = dir.list();
+//
+//                    for(int i = 0; i<arrFiles.length; i++)
+//                    {
+//                        File temp = new File(Environment.getExternalStorageDirectory().getPath() + "/"+Network_URLs.FOLDER_NAME+"/" + arrFiles[i]);
+////                        temp.delete();
+//                    }
+
+
+                    SharedPref.putString(getApplicationContext(),"organisation_logo",part2);
+//
+//                    textFiles(Environment.getExternalStorageDirectory().getPath()+"/"+Network_URLs.FOLDER_NAME);
+
+                }
+                FileTools.bUpdated = true;
+                FileTools.DownloadFrom = "";
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void getTableDetails(String selectedSection) {
@@ -836,6 +1120,16 @@ public class TableSelectionActivity extends AppCompatActivity  implements OnMess
             dialog.setCanceledOnTouchOutside(false);
             dialog.setCancelable(false);
             dialog.show();
+        }
+    }
+
+    public boolean isNetworkAvailable() {
+        ConnectionDetector cd=new ConnectionDetector(this);
+        if (cd.isConnected()) {
+            return true;
+        }else {
+            Toast.makeText(this,getResources().getString(R.string.device_offline_please_check),Toast.LENGTH_SHORT).show();
+            return false;
         }
     }
 

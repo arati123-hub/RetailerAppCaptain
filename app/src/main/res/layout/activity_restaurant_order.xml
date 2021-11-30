@@ -464,21 +464,6 @@
                 android:layout_gravity="center"
                 android:gravity="center"/>
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/btn_refresh"
-                android:layout_width="70dp"
-                android:layout_height="50dp"
-                android:text="@string/sync"
-                android:layout_margin="7dp"
-                android:background="@drawable/back_whiteblack"
-                android:textColor="@color/black"
-                android:drawableTop="@drawable/ic_refresh"
-                android:drawableTint="#0d557d"
-                android:textSize="@dimen/small_text"
-                android:fontFamily="sans-serif"
-                android:padding="5dp"
-                android:layout_gravity="center"
-                android:gravity="center"/>
-            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/btn_back"
                 android:layout_width="70dp"
                 android:layout_height="50dp"

@@ -65,7 +65,10 @@ public class ExtraListAdapter extends RecyclerView.Adapter<ExtraListAdapter.MyVi
             holder.itemQuanitity.setTypeface(FontStyle.getFontRegular());
             holder.itemAmount.setTypeface(FontStyle.getFontRegular());
 
-            holder.itemName.setText(response.get(position).getOrder_extra_item_name());
+            String name =response.get(position).getOrder_extra_item_name();
+            name = name.replace("(EXT)","");
+
+            holder.itemName.setText(name);
             holder.itemPrice.setText(response.get(position).getOrder_extra_item_price());
             holder.itemQuanitity.setText(response.get(position).getOrder_extra_item_qty());
             holder.itemAmount.setText(String.valueOf(

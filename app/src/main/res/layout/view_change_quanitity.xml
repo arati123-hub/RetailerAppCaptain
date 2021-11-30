@@ -65,7 +65,7 @@
                     android:fontFamily="sans-serif"
                     android:imeOptions="actionNext"
                     android:inputType="number"
-                    android:maxLength="6"
+                    android:maxLength="3"
                     android:maxLines="1"
                     android:paddingLeft="20dp"
                     android:paddingTop="10dp"
