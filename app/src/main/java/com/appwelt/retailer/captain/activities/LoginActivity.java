@@ -97,7 +97,7 @@ public class LoginActivity extends AppCompatActivity implements OnMessageListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-//        startActivity(new Intent(getApplicationContext(),RestaurantOrderActivity.class));
+//        startActivity(new Intent(getApplicationContext(),TableSelectionActivity.class));
 
         FontStyle.FontStyle(LoginActivity.this);
 

@@ -66,16 +66,16 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
         holder.itemNo1.setTypeface(FontStyle.getFontRegular());
 
         String productSr = product_id;
-        holder.itemNo.setText("PRO0"+productSr);
         String productName = editModelArrayList.get(position).getProduct_name();
         String productPrice = editModelArrayList.get(position).getProduct_price();
 
         holder.itemName.setText(productName);
-        holder.itemName.setText(productPrice);
+        holder.itemPrice.setText(productPrice);
 
+        holder.itemNo.setText(editModelArrayList.get(position).getProduct_code());
         holder.itemNo1.setText(editModelArrayList.get(position).getProduct_code());
-        holder.itemName1.setText(editModelArrayList.get(position).getProduct_name());
-        holder.itemPrice1.setText(editModelArrayList.get(position).getProduct_price());
+        holder.itemName1.setText(productName);
+        holder.itemPrice1.setText(productPrice);
 
         String productPhoto =editModelArrayList.get(position).getProduct_photo();
         File imgFile = new File(Environment.getExternalStorageDirectory()+"/RetailerApp/images/" + productPhoto);

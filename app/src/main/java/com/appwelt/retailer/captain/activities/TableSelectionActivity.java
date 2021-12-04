@@ -56,7 +56,7 @@ public class TableSelectionActivity extends AppCompatActivity  implements OnMess
     private static final String TAG = "TABLE_SELECTION";
 
     RecyclerView recyclerView;
-    String selectedTableType="",selectedTable = "", selectedTableName = "", selectedSection = "";
+    String selectedTable = "", selectedTableName = "", selectedSection = "";
 
     String foodStatus,barStatus,foodOrderId,barOrderId,foodBillId,barBillId;
 
@@ -352,7 +352,7 @@ public class TableSelectionActivity extends AppCompatActivity  implements OnMess
                     @Override
                     public void onItemClick(TableListDetails item) {
                         SharedPref.putString(TableSelectionActivity.this,"table",item.getCollector_id());
-                        selectedTableType = item.getCollector_type();
+//                        selectedTableType = item.getCollector_type();
                         selectedTable = item.getCollector_id();
                         selectedTableName = item.getCollector_name();
                         foodStatus = ""; barStatus = "";
@@ -472,9 +472,9 @@ public class TableSelectionActivity extends AppCompatActivity  implements OnMess
         branchID = SharedPref.getString(getApplicationContext(),"branch_id");
         organisationLogo = SharedPref.getString(getApplicationContext(),"organisation_logo_path");
 
-//        organisationID = "Lg08Tcn7";
-//        branchID = "K5o7ziXp";
-//        organisationLogo = "organisation_logos/Lg08Tcn7.png";
+//        organisationID = "qFOhyB57";
+//        branchID = "0DQkxvu7";
+//        organisationLogo = "organisation_logos/qFOhyB57.png";
 
         if (organisationID != null && branchID != null){
             if (organisationID.length()!=0 && branchID.length()!=0){
@@ -646,7 +646,7 @@ public class TableSelectionActivity extends AppCompatActivity  implements OnMess
                     }
 
                     progressDialog.dismiss();
-                    startActivity(new Intent(getApplicationContext(), RestaurantOrderActivity.class));
+                    startActivity(new Intent(getApplicationContext(), TableSelectionActivity.class));
                     finish();
 
 
@@ -733,7 +733,7 @@ public class TableSelectionActivity extends AppCompatActivity  implements OnMess
 
     public void OnOrderOptionClick(View view) {
         SharedPref.putString(TableSelectionActivity.this,"order_type","FOOD");
-        if (selectedTableType.equals("")){
+        if (selectedTable.equals("")){
             DialogBox(getResources().getString(R.string.select_table));
         }else{
             if (foodStatus.equals("2") || barStatus.equals("2")) {
@@ -748,7 +748,7 @@ public class TableSelectionActivity extends AppCompatActivity  implements OnMess
 
     public void OnBillOptionClick(View view) {
 
-        if (selectedTableType.equals("")){
+        if (selectedTable.equals("")){
             DialogBox(getResources().getString(R.string.select_table));
         }else{
             String table_food_status =  foodStatus;
@@ -824,7 +824,7 @@ public class TableSelectionActivity extends AppCompatActivity  implements OnMess
     public void OnBarOrderClick(View view) {
         SharedPref.putString(TableSelectionActivity.this,"order_type","BAR");
 
-        if (selectedTableType.equals("")){
+        if (selectedTable.equals("")){
             DialogBox(getResources().getString(R.string.select_table));
         }else{
             if (foodStatus.equals("2") || barStatus.equals("2")) {
@@ -837,7 +837,7 @@ public class TableSelectionActivity extends AppCompatActivity  implements OnMess
     }
 
     public void onClearOptionClick(View view) {
-        if (selectedTableType.equals("")){
+        if (selectedTable.equals("")){
             DialogBox(getResources().getString(R.string.select_table));
         }else{
 
@@ -914,7 +914,7 @@ public class TableSelectionActivity extends AppCompatActivity  implements OnMess
     }
 
     public void onChangeOptionClick(View view) {
-        if (selectedTableType.equals("")){
+        if (selectedTable.equals("")){
             DialogBox(getResources().getString(R.string.select_table));
         }else{
             String table_food_status = foodStatus;
@@ -1108,7 +1108,7 @@ public class TableSelectionActivity extends AppCompatActivity  implements OnMess
                     TableListDetails objNewTable = Halltables.get(spinner.getSelectedItemPosition());
 
                     String tableNo = objNewTable.getCollector_id(); //tableListDetails.get(spinner.getSelectedItemPosition()).getCollector_id();
-                    CaptainOrderService.getInstance().sendCommand(Constants.cmdMergeTable + SharedPref.getString(TableSelectionActivity.this, "device_id") + "#{'destination_table':'" + tableNo + "','source_table':'" + selectedTable + "','section_id':'" + selectedSection+"','user_id':'"+SharedPref.getString(TableSelectionActivity.this,"user_id")+"'}");
+                    CaptainOrderService.getInstance().sendCommand(Constants.cmdMergeTable + SharedPref.getString(TableSelectionActivity.this, "device_id") + "#{'destination_table':'" + selectedTable + "','source_table':'" + tableNo + "','section_id':'" + selectedSection+"','user_id':'"+SharedPref.getString(TableSelectionActivity.this,"user_id")+"'}");
                     dialog.dismiss();
                 }
             });
