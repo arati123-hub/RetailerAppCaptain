@@ -472,9 +472,9 @@ public class TableSelectionActivity extends AppCompatActivity  implements OnMess
         branchID = SharedPref.getString(getApplicationContext(),"branch_id");
         organisationLogo = SharedPref.getString(getApplicationContext(),"organisation_logo_path");
 
-//        organisationID = "qFOhyB57";
-//        branchID = "0DQkxvu7";
-//        organisationLogo = "organisation_logos/qFOhyB57.png";
+//        organisationID = "y6C8dzrs";
+//        branchID = "MW3P4cw2";
+//        organisationLogo = "organisation_logos/y6C8dzrs.jpg";
 
         if (organisationID != null && branchID != null){
             if (organisationID.length()!=0 && branchID.length()!=0){

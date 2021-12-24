@@ -621,9 +621,6 @@ public class RestaurantOrderActivity extends AppCompatActivity  implements OnMes
 
     }
 
-
-
-
     private void getItemsFromJSON() {
 
         File ItemList = new File(Environment.getExternalStorageDirectory().getPath() + "/" + Network_URLs.FOLDER_NAME + "/ItemList");
