@@ -475,6 +475,7 @@ public class RestaurantOrderActivity extends AppCompatActivity  implements OnMes
             }
         });
 
+        Log.i(TAG, "init: "+SharedPref.getString(getApplicationContext(),"section"));
         section_id = SharedPref.getString(RestaurantOrderActivity.this,"section");
         CaptainOrderService.getInstance().ServiceInitiate();
         CaptainOrderService.getInstance().sendCommand(Constants.cmdTableOrder + SharedPref.getString(RestaurantOrderActivity.this, "device_id") + "#{'section_id':'"+section_id+"','table_id':'"+selectedTable+"','bill_type':'"+SharedPref.getString(RestaurantOrderActivity.this,"bill_type")+"','order_type':'"+order_type+"','user_id':'"+SharedPref.getString(RestaurantOrderActivity.this,"user_id")+"'}");

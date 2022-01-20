@@ -9,7 +9,8 @@ public class Network_URLs extends Application {
     public static String FOLDER_NAME = "RetailerApp";
     public static String SHARE_PREFERENCE_FILE = "SharePreferenceValue.json";
     public static String LICENSE_FILE = "License.json";
-    public static String SERVER_URL = "http://13.127.49.54/retailer/";
+//    public static String SERVER_URL = "http://13.127.49.54/retailer/";
+    public static String SERVER_URL = "http://3.7.56.152/";
     public static String FILE_UPLOAD = SERVER_URL +"apiv1/uploads/fileupload.php";
     public static String API_URL = SERVER_URL + "apiv1/";
     public static String FILE_STORAGE = SERVER_URL + "storage/";
