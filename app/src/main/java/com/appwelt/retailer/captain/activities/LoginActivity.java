@@ -757,7 +757,7 @@ public class LoginActivity extends AppCompatActivity implements OnMessageListene
 
                        handleDownloadedData(message_data);
 
-                        downloadImagePath = orgnaisationID+"/"+branchID+"/"+"retailer_images_download.zip";
+                        downloadImagePath = orgnaisationID+"/"+branchID+"/"+"retailer_images_"+orgnaisationID+"_"+branchID+".zip";
                         progressDialog.setMessage(getResources().getString(R.string.getting_updated_images));
                         new DownloadImage().execute();
                     }
